@@ -1,0 +1,1048 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LifeOS</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0F172A;--bg2:#1E293B;--bg3:#334155;
+  --violet:#7C3AED;--vl:#A78BFA;
+  --em:#10B981;--em2:#059669;
+  --am:#F59E0B;--ro:#F43F5E;--ro2:#E11D48;
+  --tx:#F1F5F9;--tx2:#94A3B8;--tx3:#64748B;
+  --bd:rgba(255,255,255,0.08);--bd2:rgba(255,255,255,0.13);
+  --gl:rgba(255,255,255,0.05);--gl2:rgba(255,255,255,0.09);
+  --sw:240px;--r:16px;--rs:10px;
+}
+[data-theme=light]{--bg:#F1F5F9;--bg2:#FFFFFF;--bg3:#E2E8F0;--tx:#0F172A;--tx2:#475569;--tx3:#94A3B8;--bd:rgba(0,0,0,0.08);--bd2:rgba(0,0,0,0.13);--gl:rgba(0,0,0,0.02);--gl2:rgba(0,0,0,0.05)}
+body{font-family:system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--tx);min-height:100vh;display:flex;overflow:hidden}
+::-webkit-scrollbar{width:4px}::-webkit-scrollbar-thumb{background:var(--bg3);border-radius:2px}
+.sidebar{width:var(--sw);min-height:100vh;background:var(--bg2);border-right:1px solid var(--bd);display:flex;flex-direction:column;padding:18px 10px;position:fixed;left:0;top:0;bottom:0;z-index:100;transition:transform .3s}
+.logo{display:flex;align-items:center;gap:10px;padding:8px 12px;margin-bottom:22px}
+.logo-icon{width:36px;height:36px;background:linear-gradient(135deg,var(--violet),var(--em));border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px}
+.logo-text{font-size:18px;font-weight:700;background:linear-gradient(135deg,var(--vl),var(--em));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.nav-sec{font-size:10px;font-weight:600;color:var(--tx3);text-transform:uppercase;letter-spacing:1px;padding:0 12px;margin:10px 0 4px}
+.nav-item{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:var(--rs);cursor:pointer;transition:all .2s;color:var(--tx2);font-size:14px;font-weight:500;margin-bottom:2px;border:1px solid transparent}
+.nav-item:hover{background:var(--gl2);color:var(--tx)}
+.nav-item.active{background:linear-gradient(135deg,rgba(124,58,237,.2),rgba(16,185,129,.1));color:var(--tx);border-color:rgba(124,58,237,.3)}
+.sf{margin-top:auto;padding-top:14px;border-top:1px solid var(--bd)}
+.uc{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:var(--rs)}
+.av{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--violet),var(--ro));display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;overflow:hidden}
+.av img{width:100%;height:100%;object-fit:cover}
+.main{margin-left:var(--sw);flex:1;height:100vh;overflow-y:auto}
+.page{display:none;padding:28px;min-height:100vh;animation:fi .3s ease}
+.page.active{display:block}
+@keyframes fi{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.card{background:var(--bg2);border:1px solid var(--bd);border-radius:var(--r);padding:18px}
+.sc{background:var(--bg2);border:1px solid var(--bd);border-radius:var(--r);padding:18px;position:relative;overflow:hidden}
+.sc::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
+.sc.v::before{background:linear-gradient(90deg,var(--violet),var(--vl))}
+.sc.e::before{background:linear-gradient(90deg,var(--em),#34D399)}
+.sc.a::before{background:linear-gradient(90deg,var(--am),#FCD34D)}
+.sc.r::before{background:linear-gradient(90deg,var(--ro),#FB7185)}
+.sl{font-size:11px;color:var(--tx3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px}
+.sv{font-size:26px;font-weight:700}
+.ss{font-size:12px;color:var(--tx2);margin-top:4px}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:9px 16px;border-radius:var(--rs);border:none;cursor:pointer;font-size:14px;font-weight:500;transition:all .2s;font-family:inherit}
+.bp{background:linear-gradient(135deg,var(--violet),#6D28D9);color:#fff}
+.bp:hover{transform:translateY(-1px);box-shadow:0 8px 20px rgba(124,58,237,.4)}
+.bg{background:transparent;color:var(--tx2);border:1px solid var(--bd2)}
+.bg:hover{background:var(--gl2);color:var(--tx)}
+.be{background:linear-gradient(135deg,var(--em),var(--em2));color:#fff}
+.br{background:linear-gradient(135deg,var(--ro),var(--ro2));color:#fff}
+.bsm{padding:5px 10px;font-size:12px}
+.ig{margin-bottom:14px}
+.lb{font-size:11px;color:var(--tx2);margin-bottom:5px;display:block;font-weight:600;text-transform:uppercase;letter-spacing:.5px}
+input,select,textarea{width:100%;background:var(--bg);border:1px solid var(--bd2);border-radius:var(--rs);padding:9px 12px;color:var(--tx);font-size:14px;font-family:inherit;outline:none;transition:border-color .2s}
+input:focus,select:focus,textarea:focus{border-color:var(--violet)}
+select option{background:var(--bg2)}
+textarea{resize:vertical;min-height:80px}
+.badge{display:inline-flex;align-items:center;padding:2px 9px;border-radius:20px;font-size:11px;font-weight:600}
+.bv{background:rgba(124,58,237,.15);color:var(--vl)}
+.bem{background:rgba(16,185,129,.15);color:var(--em)}
+.bam{background:rgba(245,158,11,.15);color:var(--am)}
+.bro{background:rgba(244,63,94,.15);color:var(--ro)}
+.bgr{background:var(--gl2);color:var(--tx2)}
+.pb{height:6px;background:var(--bg3);border-radius:3px;overflow:hidden}
+.pf{height:100%;border-radius:3px;transition:width .5s ease}
+.mo{display:none;position:fixed;inset:0;background:rgba(0,0,0,.72);z-index:1000;align-items:center;justify-content:center;backdrop-filter:blur(4px)}
+.mo.open{display:flex}
+.md{background:var(--bg2);border:1px solid var(--bd2);border-radius:var(--r);padding:26px;width:92%;max-width:520px;max-height:90vh;overflow-y:auto;animation:su .3s ease}
+@keyframes su{from{transform:translateY(20px);opacity:0}to{transform:translateY(0);opacity:1}}
+.mh{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}
+.mt2{font-size:18px;font-weight:600}
+.mc{background:none;border:none;color:var(--tx2);cursor:pointer;font-size:22px;padding:2px;line-height:1}
+.tabs{display:flex;gap:4px;background:var(--bg);border-radius:var(--rs);padding:4px;margin-bottom:18px}
+.tab{flex:1;padding:7px;text-align:center;border-radius:6px;cursor:pointer;font-size:13px;font-weight:500;color:var(--tx2);transition:all .2s}
+.tab.active{background:var(--bg2);color:var(--tx)}
+.stitle{font-size:15px;font-weight:600;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between;gap:8px}
+.gc{background:linear-gradient(135deg,rgba(124,58,237,.2),rgba(16,185,129,.1));border:1px solid rgba(124,58,237,.2);border-radius:var(--r);padding:26px;margin-bottom:20px;position:relative;overflow:hidden}
+.gw{position:absolute;right:26px;top:50%;transform:translateY(-50%);text-align:right}
+.txi{display:flex;align-items:center;gap:12px;padding:11px;border-radius:var(--rs);border:1px solid var(--bd);margin-bottom:7px;transition:all .2s}
+.txi:hover{background:var(--gl2)}
+.txicon{width:38px;height:38px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:19px;flex-shrink:0}
+.hc{display:flex;align-items:center;gap:12px;padding:13px;background:var(--bg2);border:1px solid var(--bd);border-radius:var(--rs);margin-bottom:7px;cursor:pointer;transition:all .2s}
+.hch{width:34px;height:34px;border-radius:50%;border:2px solid var(--bd2);display:flex;align-items:center;justify-content:center;font-size:16px;transition:all .3s;flex-shrink:0}
+.hch.ck{background:var(--em);border-color:var(--em);color:#fff}
+.tski{display:flex;align-items:flex-start;gap:11px;padding:11px;background:var(--bg2);border:1px solid var(--bd);border-radius:var(--rs);margin-bottom:7px}
+.tskck{width:20px;height:20px;border-radius:50%;border:2px solid var(--bd2);flex-shrink:0;cursor:pointer;margin-top:2px;transition:all .2s;display:flex;align-items:center;justify-content:center;font-size:11px}
+.tskck.dn{background:var(--em);border-color:var(--em);color:#fff}
+.kb{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.kc{background:var(--gl);border:1px solid var(--bd);border-radius:var(--r);padding:14px;min-height:180px}
+.kcard{background:var(--bg2);border:1px solid var(--bd2);border-radius:var(--rs);padding:11px;margin-bottom:8px}
+.gcard{background:var(--bg2);border:1px solid var(--bd);border-radius:var(--r);padding:18px;margin-bottom:12px}
+.mstone{display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid var(--bd);font-size:13px}
+.mstone:last-child{border-bottom:none}
+.mck{width:20px;height:20px;border-radius:50%;border:2px solid var(--bd2);display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;transition:all .2s;font-size:11px}
+.mck.dn{background:var(--em);border-color:var(--em);color:#fff}
+.de{padding:14px;background:var(--gl);border:1px solid var(--bd);border-radius:var(--rs);margin-bottom:9px;cursor:pointer;transition:all .2s}
+.de:hover{background:var(--gl2)}
+.tcircle{width:210px;height:210px;border-radius:50%;background:var(--bg);border:3px solid var(--bd2);display:flex;align-items:center;justify-content:center;margin:0 auto;position:relative}
+.tsvg{position:absolute;top:-3px;left:-3px;width:calc(100% + 6px);height:calc(100% + 6px);transform:rotate(-90deg)}
+.moo{display:flex;gap:7px;flex-wrap:wrap}
+.mb{padding:7px 13px;background:var(--gl);border:1px solid var(--bd);border-radius:22px;cursor:pointer;font-size:18px;transition:all .2s;display:flex;align-items:center;gap:5px}
+.mb:hover,.mb.sel{border-color:var(--violet);background:rgba(124,58,237,.15)}
+.mb span{font-size:11px;color:var(--tx2)}
+.wc2{aspect-ratio:1;border-radius:3px;background:var(--gl);border:1px solid var(--bd)}
+.wc2.dn{background:rgba(16,185,129,.3);border-color:rgba(16,185,129,.4)}
+.fab{position:fixed;bottom:28px;right:28px;width:54px;height:54px;border-radius:50%;background:linear-gradient(135deg,var(--violet),#6D28D9);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:26px;color:#fff;box-shadow:0 8px 28px rgba(124,58,237,.5);transition:all .3s;z-index:50}
+.fab:hover{transform:scale(1.1) rotate(45deg)}
+.qc{background:linear-gradient(135deg,rgba(16,185,129,.1),rgba(124,58,237,.1));border:1px solid rgba(16,185,129,.2);border-radius:var(--r);padding:18px;text-align:center;margin-bottom:18px}
+.cfp{position:fixed;width:8px;height:8px;border-radius:2px;pointer-events:none;z-index:9999;animation:cf 2s ease-in forwards}
+@keyframes cf{0%{transform:translateY(-20px) rotate(0deg);opacity:1}100%{transform:translateY(100vh) rotate(720deg);opacity:0}}
+.ch{position:relative;height:190px}
+.dtb{display:flex;gap:3px;padding:7px;background:var(--bg);border:1px solid var(--bd);border-radius:var(--rs) var(--rs) 0 0}
+.tb{width:30px;height:30px;display:flex;align-items:center;justify-content:center;background:none;border:none;color:var(--tx2);cursor:pointer;border-radius:5px;font-size:13px;font-weight:600;transition:all .15s}
+.tb:hover{background:var(--gl2);color:var(--tx)}
+#diary-ed{border-radius:0 0 var(--rs) var(--rs);border-top:none;min-height:180px}
+.login-screen{position:fixed;inset:0;background:var(--bg);display:flex;align-items:center;justify-content:center;z-index:2000;flex-direction:column}
+.login-card{background:var(--bg2);border:1px solid var(--bd2);border-radius:var(--r);padding:40px;text-align:center;max-width:380px;width:90%}
+.google-btn{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;padding:13px 20px;background:#fff;color:#333;border:none;border-radius:var(--rs);cursor:pointer;font-size:15px;font-weight:500;transition:all .2s;font-family:inherit}
+.google-btn:hover{transform:translateY(-1px);box-shadow:0 8px 20px rgba(0,0,0,.15)}
+.sync-dot{width:8px;height:8px;border-radius:50%;background:var(--em);display:inline-block;margin-right:5px}
+.sync-dot.syncing{background:var(--am);animation:pulse .8s infinite}
+.sync-dot.offline{background:var(--ro)}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+/* OCR Specific */
+.ocr-loading{display:none;flex-direction:column;align-items:center;gap:12px;padding:24px;text-align:center}
+.ocr-spinner{width:40px;height:40px;border:3px solid var(--bd2);border-top-color:var(--violet);border-radius:50%;animation:spin 1s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.ocr-result{background:rgba(16,185,129,.1);border:1px solid rgba(16,185,129,.3);border-radius:var(--rs);padding:14px;margin-top:10px;display:none}
+/* Category tags */
+.cat-tag{display:inline-flex;align-items:center;gap:4px;padding:4px 10px;border-radius:20px;font-size:12px;cursor:pointer;border:1px solid var(--bd2);background:var(--gl);margin:2px;transition:all .2s}
+.cat-tag:hover,.cat-tag.sel{border-color:var(--violet);background:rgba(124,58,237,.15);color:var(--vl)}
+/* Gmail Tasks */
+.gmail-status{display:flex;align-items:center;gap:8px;padding:10px 14px;border-radius:var(--rs);font-size:13px;margin-bottom:14px}
+.gmail-connected{background:rgba(16,185,129,.1);border:1px solid rgba(16,185,129,.3);color:var(--em)}
+.gmail-disconnected{background:rgba(244,63,94,.1);border:1px solid rgba(244,63,94,.3);color:var(--ro)}
+.gtask-item{display:flex;align-items:center;gap:10px;padding:10px;border:1px solid var(--bd);border-radius:var(--rs);margin-bottom:6px;font-size:13px}
+.gtask-check{width:18px;height:18px;border-radius:50%;border:2px solid var(--bd2);flex-shrink:0}
+.gtask-check.done{background:var(--em);border-color:var(--em)}
+@media(max-width:768px){.sidebar{transform:translateX(-100%)}.sidebar.open{transform:translateX(0)}.main{margin-left:0}.mbb{display:flex!important}.page{padding:54px 14px 22px}.g4,.g3{grid-template-columns:1fr 1fr}.g2{grid-template-columns:1fr}.kb{grid-template-columns:1fr}.gw{display:none}}
+.mbb{display:none;position:fixed;top:14px;left:14px;z-index:200;width:40px;height:40px;background:var(--bg2);border:1px solid var(--bd2);border-radius:var(--rs);align-items:center;justify-content:center;cursor:pointer;font-size:20px}
+</style>
+</head>
+<body>
+
+<div class="login-screen" id="login-screen">
+  <div class="login-card">
+    <div style="font-size:48px;margin-bottom:12px">🌟</div>
+    <div style="font-size:24px;font-weight:700;margin-bottom:6px">LifeOS</div>
+    <div style="font-size:13px;color:var(--tx2);margin-bottom:28px">Sign in to sync across all devices</div>
+    <button class="google-btn" onclick="signInGoogle()">
+      <svg width="20" height="20" viewBox="0 0 48 48"><path fill="#FFC107" d="M43.6 20H24v8h11.3C33.7 33.1 29.3 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3 0 5.8 1.1 7.9 3l5.7-5.7C34 6.5 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20c11 0 20-9 20-20 0-1.3-.1-2.7-.4-4z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.4 15.1 18.9 12 24 12c3 0 5.8 1.1 7.9 3l5.7-5.7C34 6.5 29.3 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.1l-6.2-5.2C29.4 35.5 26.8 36 24 36c-5.2 0-9.6-2.9-11.3-7l-6.6 4.8C9.7 39.7 16.3 44 24 44z"/><path fill="#1976D2" d="M43.6 20H24v8h11.3c-.9 2.4-2.5 4.4-4.6 5.8l6.2 5.2C40.4 35.5 44 30.2 44 24c0-1.3-.1-2.7-.4-4z"/></svg>
+      Continue with Google
+    </button>
+  </div>
+</div>
+
+<button class="mbb" onclick="toggleSidebar()">☰</button>
+
+<nav class="sidebar" id="sidebar">
+  <div class="logo"><div class="logo-icon">🌟</div><div class="logo-text">LifeOS</div></div>
+  <div style="display:flex;align-items:center;gap:6px;padding:6px 12px;margin-bottom:8px;font-size:11px;color:var(--tx3)">
+    <span class="sync-dot" id="sync-dot"></span><span id="sync-status">Connected</span>
+  </div>
+  <div class="nav-sec">Overview</div>
+  <div class="nav-item active" onclick="navigate('dashboard')"><span style="width:22px;text-align:center">📊</span>Dashboard</div>
+  <div class="nav-sec">Modules</div>
+  <div class="nav-item" onclick="navigate('finance')"><span style="width:22px;text-align:center">💰</span>Finance</div>
+  <div class="nav-item" onclick="navigate('habits')"><span style="width:22px;text-align:center">✅</span>Habits</div>
+  <div class="nav-item" onclick="navigate('todos')"><span style="width:22px;text-align:center">📝</span>To-Do List</div>
+  <div class="nav-item" onclick="navigate('diary')"><span style="width:22px;text-align:center">📖</span>Daily Diary</div>
+  <div class="nav-item" onclick="navigate('goals')"><span style="width:22px;text-align:center">🎯</span>Goal Planner</div>
+  <div class="nav-item" onclick="navigate('pomodoro')"><span style="width:22px;text-align:center">⏱️</span>Pomodoro</div>
+  <div class="nav-sec">System</div>
+  <div class="nav-item" onclick="navigate('settings')"><span style="width:22px;text-align:center">⚙️</span>Settings</div>
+  <div class="sf">
+    <div class="uc">
+      <div class="av" id="sav"><span id="sav-txt">😊</span></div>
+      <div style="flex:1;min-width:0"><div style="font-size:13px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" id="sname">Loading...</div><div style="font-size:11px;color:var(--tx3)">LifeOS · Synced ☁️</div></div>
+      <button onclick="doSignOut()" style="background:none;border:none;color:var(--tx3);cursor:pointer;font-size:18px" title="Sign out">↪</button>
+    </div>
+  </div>
+</nav>
+
+<main class="main">
+
+<!-- DASHBOARD -->
+<div class="page active" id="page-dashboard">
+  <div class="gc">
+    <div style="font-size:13px;color:var(--tx2)" id="d-time">Good morning ☀️</div>
+    <div style="font-size:26px;font-weight:700;margin:4px 0" id="d-greet">Hello! 👋</div>
+    <div style="font-size:13px;color:var(--tx2)" id="d-date"></div>
+    <div class="gw"><div style="font-size:44px" id="d-wicon">⛅</div><div style="font-size:22px;font-weight:700" id="d-wtemp">--°C</div><div style="font-size:11px;color:var(--tx2)" id="d-wdesc">Chon Buri</div></div>
+  </div>
+  <div class="qc"><div style="font-size:14px;font-style:italic;margin-bottom:6px" id="d-quote">"The secret of getting ahead is getting started."</div><div style="font-size:12px;color:var(--tx3)" id="d-author">— Mark Twain</div></div>
+  <div class="g4" style="margin-bottom:18px">
+    <div class="sc v"><div class="sl">💰 Balance Today</div><div class="sv" id="d-bal">฿0</div><div class="ss" id="d-balsub">No entries</div></div>
+    <div class="sc e"><div class="sl">✅ Habits Done</div><div class="sv" id="d-hab">0/0</div><div class="ss" id="d-habsub">0%</div></div>
+    <div class="sc a"><div class="sl">📝 Tasks Today</div><div class="sv" id="d-tsk">0</div><div class="ss" id="d-tsksub">No tasks</div></div>
+    <div class="sc r"><div class="sl">⏱️ Focus Time</div><div class="sv" id="d-foc">0m</div><div class="ss">Pomodoros today</div></div>
+  </div>
+  <div class="g2" style="margin-bottom:18px">
+    <div class="card"><div class="stitle">📖 Journal <span id="d-diaryst"><span class="badge bro">Not Written</span></span></div><div style="font-size:13px;color:var(--tx2)" id="d-diaryprev">You haven't written today.</div><button class="btn bg bsm" style="margin-top:10px" onclick="navigate('diary')">Write Now →</button></div>
+    <div class="card"><div class="stitle">🎯 Active Goals</div><div id="d-goals"></div></div>
+  </div>
+  <div class="card"><div class="stitle">💰 Recent Transactions</div><div id="d-tx"></div></div>
+</div>
+
+<!-- FINANCE -->
+<div class="page" id="page-finance">
+  <div style="margin-bottom:22px"><div style="font-size:24px;font-weight:700">💰 Finance Tracker</div><div style="color:var(--tx2);font-size:13px">Track income &amp; expenses · Custom categories · Time tracking</div></div>
+  <div class="g4" style="margin-bottom:20px">
+    <div class="sc e"><div class="sl">Income</div><div class="sv" id="f-inc">฿0</div><div class="ss">This month</div></div>
+    <div class="sc r"><div class="sl">Expenses</div><div class="sv" id="f-exp">฿0</div><div class="ss">This month</div></div>
+    <div class="sc v"><div class="sl">Net Balance</div><div class="sv" id="f-bal">฿0</div><div class="ss">This month</div></div>
+    <div class="sc a"><div class="sl">Transactions</div><div class="sv" id="f-cnt">0</div><div class="ss">This month</div></div>
+  </div>
+  <div class="g2" style="margin-bottom:20px">
+    <div class="card"><div class="stitle">Income vs Expenses (7 days)</div><div class="ch"><canvas id="fbar"></canvas></div></div>
+    <div class="card"><div class="stitle">Category Breakdown</div><div class="ch"><canvas id="fdnt"></canvas></div></div>
+  </div>
+  <div class="g2">
+    <div class="card">
+      <div class="stitle">Transactions <button class="btn bp bsm" onclick="openM('mf')">+ Add</button><button class="btn bg bsm" onclick="exportCSV()">📥 CSV</button></div>
+      <div id="f-list"></div>
+    </div>
+    <div class="card">
+      <div class="stitle">📷 Bank Slip OCR <span class="badge bem">AI Powered</span></div>
+      <div id="slip-zone" style="border:2px dashed var(--bd2);border-radius:var(--rs);padding:28px;text-align:center;cursor:pointer;transition:all .2s"
+        onclick="document.getElementById('slip-inp').click()"
+        ondragover="event.preventDefault();this.style.borderColor='var(--violet)'"
+        ondragleave="this.style.borderColor='var(--bd2)'"
+        ondrop="handleSlipDrop(event)">
+        <div style="font-size:36px;margin-bottom:8px">🏦</div>
+        <div style="font-size:13px;color:var(--tx2)">Drop bank slip or click to upload</div>
+        <div style="font-size:11px;color:var(--tx3);margin-top:4px">SCB · KBank · BBL · KTB · PromptPay · TMB</div>
+        <input type="file" id="slip-inp" accept="image/*" style="display:none" onchange="handleSlip(event)">
+      </div>
+      <div class="ocr-loading" id="ocr-loading">
+        <div class="ocr-spinner"></div>
+        <div style="font-size:13px;color:var(--tx2)">Claude AI กำลังอ่าน slip...</div>
+      </div>
+      <div id="slip-prev" style="display:none;margin-top:10px">
+        <img id="slip-img" style="width:100%;border-radius:var(--rs);max-height:200px;object-fit:contain">
+      </div>
+      <div class="ocr-result" id="ocr-result"></div>
+    </div>
+  </div>
+</div>
+
+<!-- HABITS -->
+<div class="page" id="page-habits">
+  <div style="margin-bottom:22px"><div style="font-size:24px;font-weight:700">✅ Habit Tracker</div><div style="color:var(--tx2);font-size:13px">Build routines, track streaks</div></div>
+  <div class="g4" style="margin-bottom:20px">
+    <div class="sc v"><div class="sl">Today</div><div class="sv" id="h-today">0/0</div><div class="ss" id="h-pct">0%</div></div>
+    <div class="sc e"><div class="sl">Best Streak 🔥</div><div class="sv" id="h-best">0d</div><div class="ss">All habits</div></div>
+    <div class="sc a"><div class="sl">Total Done</div><div class="sv" id="h-total">0</div><div class="ss">All time</div></div>
+    <div class="sc r"><div class="sl">Active</div><div class="sv" id="h-cnt">0</div><div class="ss">Habits</div></div>
+  </div>
+  <div class="g2">
+    <div class="card"><div class="stitle">Today's Habits <button class="btn bp bsm" onclick="openM('mh')">+ Add</button></div><div id="h-list"></div></div>
+    <div class="card"><div class="stitle">Weekly View</div><div id="h-week"></div><div class="stitle" style="margin-top:18px">7-day Rate</div><div class="ch"><canvas id="hchart"></canvas></div></div>
+  </div>
+</div>
+
+<!-- TODOS -->
+<div class="page" id="page-todos">
+  <div style="margin-bottom:22px"><div style="font-size:24px;font-weight:700">📝 To-Do List</div><div style="color:var(--tx2);font-size:13px">Synced with Gmail Tasks ✉️</div></div>
+  
+  <!-- Gmail Tasks Status -->
+  <div id="gmail-status-bar"></div>
+
+  <div class="tabs" id="ttabs">
+    <div class="tab active" onclick="setTV('today',this)">Today</div>
+    <div class="tab" onclick="setTV('upcoming',this)">Upcoming</div>
+    <div class="tab" onclick="setTV('kanban',this)">Kanban</div>
+    <div class="tab" onclick="setTV('all',this)">All</div>
+    <div class="tab" onclick="setTV('done',this)">Done</div>
+    <div class="tab" onclick="setTV('gmail',this)">📧 Gmail</div>
+  </div>
+  <div style="display:flex;gap:10px;margin-bottom:14px">
+    <input type="text" id="qtask" placeholder='"Meeting tomorrow at 3pm"...' style="flex:1" onkeydown="if(event.key==='Enter')qAdd()">
+    <button class="btn bp" onclick="qAdd()">+ Add</button>
+    <button class="btn bg" onclick="openM('mt')">📋</button>
+  </div>
+  <div style="margin-bottom:12px">
+    <div class="pb"><div class="pf" id="t-prog" style="background:linear-gradient(90deg,var(--em),var(--violet));width:0%"></div></div>
+    <div style="font-size:11px;color:var(--tx3);margin-top:3px" id="t-proglbl">0% completed today</div>
+  </div>
+  <div id="tv-today"><div id="tl-today"></div></div>
+  <div id="tv-upcoming" style="display:none"><div id="tl-upcoming"></div></div>
+  <div id="tv-kanban" style="display:none"><div class="kb" id="kanban"></div></div>
+  <div id="tv-all" style="display:none"><div id="tl-all"></div></div>
+  <div id="tv-done" style="display:none"><div id="tl-done"></div></div>
+  <div id="tv-gmail" style="display:none"><div id="tl-gmail"></div></div>
+</div>
+
+<!-- DIARY -->
+<div class="page" id="page-diary">
+  <div style="margin-bottom:22px"><div style="font-size:24px;font-weight:700">📖 Daily Diary</div><div style="color:var(--tx2);font-size:13px" id="diary-dl"></div></div>
+  <div class="g2">
+    <div>
+      <div class="card" style="margin-bottom:14px">
+        <div class="ig"><div class="lb">Mood</div>
+          <div class="moo">
+            <div class="mb" onclick="selMood('amazing',this)">😄<span>Amazing</span></div>
+            <div class="mb" onclick="selMood('good',this)">🙂<span>Good</span></div>
+            <div class="mb" onclick="selMood('neutral',this)">😐<span>Neutral</span></div>
+            <div class="mb" onclick="selMood('sad',this)">😔<span>Sad</span></div>
+            <div class="mb" onclick="selMood('stressed',this)">😤<span>Stressed</span></div>
+          </div>
+        </div>
+        <div class="ig"><div class="lb">Location</div><div style="display:flex;gap:7px"><input type="text" id="d-loc" placeholder="Where are you?" style="flex:1"><button class="btn bg bsm" onclick="getLoc()">📍</button></div></div>
+        <div class="ig"><div class="lb">Weather</div><input type="text" id="d-wx" placeholder="e.g. Sunny 32°C"></div>
+        <div class="ig"><div class="lb">Entry</div>
+          <div class="dtb"><button class="tb" onclick="fmtD('bold')"><b>B</b></button><button class="tb" onclick="fmtD('italic')"><i>I</i></button><button class="tb" onclick="insD('• ')">•</button><button class="tb" onclick="insEmoji()">😊</button></div>
+          <textarea id="diary-ed" placeholder="Dear Diary..." oninput="updWC()"></textarea>
+          <div style="font-size:11px;color:var(--tx3);text-align:right;margin-top:3px" id="d-wc">0 words</div>
+        </div>
+        <div class="ig"><div class="lb">Tags</div><input type="text" id="d-tags" placeholder="family, work..."></div>
+        <div style="display:flex;gap:8px"><button class="btn bp" onclick="saveDiary()">💾 Save</button><button class="btn bg" onclick="exportDiary()">📥 Export</button></div>
+      </div>
+    </div>
+    <div>
+      <div class="card" style="margin-bottom:14px"><div class="stitle">Mood Trend</div><div class="ch" style="height:140px"><canvas id="mchart"></canvas></div></div>
+      <div class="card"><div class="stitle">Past Entries <input type="text" placeholder="Search..." style="width:140px;font-size:12px;padding:5px 9px" oninput="searchD(this.value)"></div><div id="d-elist"></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- GOALS -->
+<div class="page" id="page-goals">
+  <div style="margin-bottom:22px"><div style="font-size:24px;font-weight:700">🎯 Goal Planner</div></div>
+  <button class="btn bp" style="margin-bottom:16px" onclick="openM('mg')">+ New Goal</button>
+  <div id="g-list"></div>
+</div>
+
+<!-- POMODORO -->
+<div class="page" id="page-pomodoro">
+  <div style="margin-bottom:22px"><div style="font-size:24px;font-weight:700">⏱️ Pomodoro Timer</div></div>
+  <div style="max-width:380px;margin:0 auto">
+    <div class="tabs" id="ptabs">
+      <div class="tab active" onclick="setPM('work',this)">🎯 Focus</div>
+      <div class="tab" onclick="setPM('short',this)">☕ Short</div>
+      <div class="tab" onclick="setPM('long',this)">🛌 Long</div>
+    </div>
+    <div class="card" style="text-align:center;padding:36px 18px">
+      <div class="tcircle">
+        <svg class="tsvg" viewBox="0 0 216 216"><circle cx="108" cy="108" r="100" fill="none" stroke="rgba(124,58,237,.15)" stroke-width="7"/><circle id="tarc" cx="108" cy="108" r="100" fill="none" stroke="url(#tg)" stroke-width="7" stroke-linecap="round" stroke-dasharray="628.3" stroke-dashoffset="0"/><defs><linearGradient id="tg" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" style="stop-color:var(--violet)"/><stop offset="100%" style="stop-color:var(--em)"/></linearGradient></defs></svg>
+        <div><div style="font-size:48px;font-weight:700;font-variant-numeric:tabular-nums" id="t-disp">25:00</div><div style="font-size:11px;color:var(--tx2);text-transform:uppercase;letter-spacing:1px" id="t-lbl">Focus Time</div></div>
+      </div>
+      <div style="display:flex;gap:10px;justify-content:center;margin:22px 0">
+        <button class="btn bp" id="p-startbtn" onclick="togglePom()">▶ Start</button>
+        <button class="btn bg" onclick="resetPom()">↺ Reset</button>
+      </div>
+      <div class="ig"><div class="lb" style="text-align:left">Linked Task</div><select id="p-task"><option value="">— None —</option></select></div>
+      <div class="g3" style="margin-top:6px">
+        <div style="background:var(--gl);border:1px solid var(--bd);border-radius:var(--rs);padding:12px;text-align:center"><div style="font-size:20px;font-weight:700" id="p-sess">0</div><div style="font-size:10px;color:var(--tx3)">Sessions</div></div>
+        <div style="background:var(--gl);border:1px solid var(--bd);border-radius:var(--rs);padding:12px;text-align:center"><div style="font-size:20px;font-weight:700" id="p-min">0m</div><div style="font-size:10px;color:var(--tx3)">Today</div></div>
+        <div style="background:var(--gl);border:1px solid var(--bd);border-radius:var(--rs);padding:12px;text-align:center"><div style="font-size:20px;font-weight:700" id="p-str">0🔥</div><div style="font-size:10px;color:var(--tx3)">Streak</div></div>
+      </div>
+    </div>
+    <div class="card" style="margin-top:14px"><div class="stitle">Session Log</div><div id="p-log" style="font-size:13px;color:var(--tx2)">No sessions yet.</div></div>
+  </div>
+</div>
+
+<!-- SETTINGS -->
+<div class="page" id="page-settings">
+  <div style="margin-bottom:22px"><div style="font-size:24px;font-weight:700">⚙️ Settings</div></div>
+  <div class="g2">
+    <div>
+      <div class="card" style="margin-bottom:14px">
+        <div class="stitle">Profile</div>
+        <div id="set-profile-info" style="display:flex;align-items:center;gap:12px;padding:12px;background:var(--gl);border-radius:var(--rs);margin-bottom:14px">
+          <div class="av" style="width:44px;height:44px"><img id="set-photo" src="" style="display:none"><span id="set-photo-fb" style="font-size:22px">😊</span></div>
+          <div><div style="font-weight:600" id="set-dname">-</div><div style="font-size:12px;color:var(--tx3)" id="set-email">-</div></div>
+        </div>
+        <div class="ig"><div class="lb">Display Name</div><input type="text" id="s-name" placeholder="Your name"></div>
+        <div class="ig"><div class="lb">City / Location</div><input type="text" id="s-loc" placeholder="Chon Buri, Thailand"></div>
+        <button class="btn bp" onclick="saveSet()">Save Profile</button>
+      </div>
+      <div class="card" style="margin-bottom:14px">
+        <div class="stitle">Appearance</div>
+        <div class="ig"><div class="lb">Theme</div><select id="s-theme" onchange="applyTheme(this.value)"><option value="dark">🌙 Dark</option><option value="light">☀️ Light</option></select></div>
+        <div class="ig"><div class="lb">Currency</div><select id="s-cur"><option value="THB">🇹🇭 Thai Baht (฿)</option><option value="USD">🇺🇸 US Dollar ($)</option><option value="EUR">🇪🇺 Euro (€)</option></select></div>
+      </div>
+      <div class="card">
+        <div class="stitle">🏷️ Custom Categories</div>
+        <div style="font-size:13px;color:var(--tx2);margin-bottom:10px">จัดการหมวดหมู่ธุรกรรมของคุณ</div>
+        <div id="cat-list" style="margin-bottom:10px"></div>
+        <div style="display:flex;gap:8px">
+          <input type="text" id="new-cat-icon" placeholder="🏷️" style="width:60px">
+          <input type="text" id="new-cat-name" placeholder="ชื่อหมวดหมู่..." style="flex:1">
+          <button class="btn bp bsm" onclick="addCategory()">+ Add</button>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="card" style="margin-bottom:14px">
+        <div class="stitle">🔑 API Keys</div>
+        <div class="ig">
+          <div class="lb">Anthropic API Key (สำหรับ OCR)</div>
+          <input type="password" id="s-anthropic" placeholder="sk-ant-api03-...">
+          <div style="font-size:11px;color:var(--tx3);margin-top:4px">เก็บใน Firebase · ไม่โชว์ใน GitHub</div>
+        </div>
+        <button class="btn bp bsm" onclick="saveApiKeys()">💾 Save API Keys</button>
+      </div>
+      <div class="card" style="margin-bottom:14px">
+        <div class="stitle">⏱️ Pomodoro</div>
+        <div class="ig"><div class="lb">Focus (min)</div><input type="number" id="s-foc" value="25" min="1" max="120"></div>
+        <div class="ig"><div class="lb">Short Break (min)</div><input type="number" id="s-shr" value="5" min="1" max="60"></div>
+        <div class="ig"><div class="lb">Long Break (min)</div><input type="number" id="s-lng" value="15" min="1" max="60"></div>
+        <button class="btn bp" onclick="savePomSet()">Save</button>
+      </div>
+      <div class="card" style="margin-bottom:14px">
+        <div class="stitle">📧 Gmail Tasks Integration</div>
+        <div id="gmail-set-status"></div>
+        <button class="btn be" id="gmail-connect-btn" onclick="connectGmail()" style="width:100%;margin-bottom:8px">Connect Gmail Tasks</button>
+        <button class="btn bg" id="gmail-sync-btn" onclick="syncGmailTasks()" style="width:100%;display:none">🔄 Sync Now</button>
+        <div style="font-size:11px;color:var(--tx3);margin-top:8px">Tasks จะ sync กับ Google Tasks โดยอัตโนมัติ</div>
+      </div>
+      <div class="card">
+        <div class="stitle">Data</div>
+        <div style="display:flex;flex-direction:column;gap:9px">
+          <button class="btn bg" onclick="exportAll()">📤 Export JSON</button>
+          <button class="btn be" onclick="loadDemo()">🎭 Demo Data</button>
+          <button class="btn br" onclick="if(confirm('Clear ALL?'))clearAll()">🗑️ Clear All</button>
+          <button class="btn bg" onclick="doSignOut()">↪ Sign Out</button>
+        </div>
+        <div style="margin-top:14px;padding-top:14px;border-top:1px solid var(--bd);font-size:12px;color:var(--tx3)">LifeOS v4.0 · Firebase + Claude AI + Gmail Tasks</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</main>
+
+<button class="fab" onclick="openM('mfab')">+</button>
+
+<!-- MODALS -->
+<div class="mo" id="mf">
+  <div class="md">
+    <div class="mh"><div class="mt2">Add Transaction</div><button class="mc" onclick="closeM('mf')">×</button></div>
+    <div class="ig"><div class="lb">Type</div><select id="fi-type"><option value="expense">💸 Expense</option><option value="income">💵 Income</option><option value="transfer">🔄 Transfer</option></select></div>
+    <div class="ig"><div class="lb">Amount (฿)</div><input type="number" id="fi-amt" placeholder="0.00"></div>
+    <div class="ig">
+      <div class="lb">Category</div>
+      <select id="fi-cat"></select>
+    </div>
+    <div class="ig"><div class="lb">Description</div><input type="text" id="fi-desc" placeholder="What was this for?"></div>
+    <div class="g2">
+      <div class="ig"><div class="lb">Date</div><input type="date" id="fi-date"></div>
+      <div class="ig"><div class="lb">Time</div><input type="time" id="fi-time"></div>
+    </div>
+    <button class="btn bp" style="width:100%" onclick="addTx()">Add Transaction</button>
+  </div>
+</div>
+
+<div class="mo" id="mh">
+  <div class="md">
+    <div class="mh"><div class="mt2">Add Habit</div><button class="mc" onclick="closeM('mh')">×</button></div>
+    <div class="ig"><div class="lb">Name</div><input type="text" id="hb-name" placeholder="e.g. Morning Meditation"></div>
+    <div class="ig"><div class="lb">Icon</div><input type="text" id="hb-icon" placeholder="🧘" maxlength="2"></div>
+    <div class="ig"><div class="lb">Category</div><select id="hb-cat"><option>Health</option><option>Learning</option><option>Mindfulness</option><option>Productivity</option><option>Social</option><option>Custom</option></select></div>
+    <div class="ig"><div class="lb">Streak Goal (days)</div><input type="number" id="hb-goal" value="30" min="1"></div>
+    <button class="btn bp" style="width:100%" onclick="addHabit()">Add Habit</button>
+  </div>
+</div>
+
+<div class="mo" id="mt">
+  <div class="md">
+    <div class="mh"><div class="mt2">Add Task</div><button class="mc" onclick="closeM('mt')">×</button></div>
+    <div class="ig"><div class="lb">Title</div><input type="text" id="tk-title" placeholder="What needs to be done?"></div>
+    <div class="ig"><div class="lb">Description</div><textarea id="tk-desc" placeholder="Details..."></textarea></div>
+    <div class="g2"><div class="ig"><div class="lb">Due Date</div><input type="date" id="tk-due"></div><div class="ig"><div class="lb">Due Time</div><input type="time" id="tk-time"></div></div>
+    <div class="ig"><div class="lb">Priority</div><select id="tk-pri"><option value="high">🔴 High</option><option value="medium" selected>🟡 Medium</option><option value="low">🟢 Low</option></select></div>
+    <div class="ig"><div class="lb">Tags</div><input type="text" id="tk-tags" placeholder="work, personal..."></div>
+    <div class="ig"><div class="lb" style="display:flex;align-items:center;justify-content:space-between">Sync to Gmail Tasks <span id="gmail-sync-indicator" class="badge bgr">Not connected</span></div></div>
+    <button class="btn bp" style="width:100%" onclick="addTask()">Add Task</button>
+  </div>
+</div>
+
+<div class="mo" id="mg">
+  <div class="md">
+    <div class="mh"><div class="mt2">New Goal 🎯</div><button class="mc" onclick="closeM('mg')">×</button></div>
+    <div class="ig"><div class="lb">Title</div><input type="text" id="gl-title" placeholder="What do you want to achieve?"></div>
+    <div class="ig"><div class="lb">Category</div><select id="gl-cat"><option>Career</option><option>Health</option><option>Finance</option><option>Learning</option><option>Relationships</option><option>Personal</option></select></div>
+    <div class="ig"><div class="lb">Deadline</div><input type="date" id="gl-dl"></div>
+    <div class="ig"><div class="lb">Why important?</div><textarea id="gl-desc" placeholder="Your motivation..."></textarea></div>
+    <div class="ig"><div class="lb">Milestones (one per line)</div><textarea id="gl-ms" placeholder="Step 1&#10;Step 2&#10;Step 3"></textarea></div>
+    <button class="btn bp" style="width:100%" onclick="addGoal()">Create Goal</button>
+  </div>
+</div>
+
+<div class="mo" id="mfab">
+  <div class="md" style="max-width:300px">
+    <div class="mh"><div class="mt2">Quick Add ⚡</div><button class="mc" onclick="closeM('mfab')">×</button></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:9px">
+      <button class="btn bg" onclick="closeM('mfab');openM('mf')">💰 Finance</button>
+      <button class="btn bg" onclick="closeM('mfab');openM('mt')">📝 Task</button>
+      <button class="btn bg" onclick="closeM('mfab');openM('mh')">✅ Habit</button>
+      <button class="btn bg" onclick="closeM('mfab');navigate('diary')">📖 Diary</button>
+      <button class="btn bg" onclick="closeM('mfab');openM('mg')">🎯 Goal</button>
+      <button class="btn bg" onclick="closeM('mfab');navigate('pomodoro')">⏱️ Focus</button>
+    </div>
+  </div>
+</div>
+
+<div class="mo" id="m-dview">
+  <div class="md" style="max-width:560px">
+    <div class="mh"><div class="mt2" id="dv-title">Entry</div><button class="mc" onclick="closeM('m-dview')">×</button></div>
+    <div id="dv-body"></div>
+  </div>
+</div>
+
+<!-- OCR Result Modal -->
+<div class="mo" id="m-ocr">
+  <div class="md" style="max-width:460px">
+    <div class="mh"><div class="mt2">📷 Slip Detected ✅</div><button class="mc" onclick="closeM('m-ocr')">×</button></div>
+    <div id="ocr-form"></div>
+  </div>
+</div>
+
+<script type="module">
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut as fbSignOut } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
+import { getFirestore, collection, doc, setDoc, getDocs, deleteDoc, onSnapshot } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+
+const firebaseConfig = {
+  apiKey: "AIzaSyDuUYM_yLhQ4evF6cmmsrURrzkV3eUE_II",
+  authDomain: "lifeos-app-f1b56.firebaseapp.com",
+  projectId: "lifeos-app-f1b56",
+  storageBucket: "lifeos-app-f1b56.firebasestorage.app",
+  messagingSenderId: "309575388706",
+  appId: "1:309575388706:web:9d73340ee14083761d847b"
+};
+
+const ANTHROPIC_KEY = window._anthropicKey || '';
+const PROXY_URL = 'https://lifeos-proxy.namemaza2.workers.dev';
+const GOOGLE_CLIENT_ID = "1015385874208-7uo4jqjkkueltj9kddpplql2ohsuccv1.apps.googleusercontent.com";
+const GMAIL_SCOPE = "https://www.googleapis.com/auth/tasks";
+
+const fbApp = initializeApp(firebaseConfig);
+const auth = getAuth(fbApp);
+const db = getFirestore(fbApp);
+
+// ── DEFAULT CATEGORIES ─────────────────────────────
+var DEFAULT_CATS = [
+  {icon:'🍔',name:'Food'},{icon:'🚗',name:'Transport'},{icon:'🏠',name:'Housing'},
+  {icon:'💊',name:'Health'},{icon:'🎮',name:'Entertainment'},{icon:'👔',name:'Shopping'},
+  {icon:'📚',name:'Education'},{icon:'💼',name:'Salary'},{icon:'💰',name:'Freelance'},
+  {icon:'🎁',name:'Gift'},{icon:'➕',name:'Other'}
+];
+
+// ── STATE ─────────────────────────────────────────
+var uid = null;
+var S = {
+  tx:[], habits:[], hlogs:{}, tasks:[], diary:[], goals:[], poms:[],
+  cfg:{name:'Friend',theme:'dark',cur:'THB',loc:'Chon Buri, Thailand',fw:25,sw:5,lw:15},
+  categories: DEFAULT_CATS.slice()
+};
+var CH = {};
+var pomTimer=null, pomSec=0, pomMode='work', pomRun=false;
+var pomLabels={work:'Focus Time',short:'Short Break',long:'Long Break'};
+var curMood='', curMoodE='';
+var todoView='today';
+var unsubs=[];
+var gmailToken=null;
+var gmailTaskListId=null;
+
+var QUOTES=[
+  ["The secret of getting ahead is getting started.","Mark Twain"],
+  ["Small steps every day lead to big results.","Unknown"],
+  ["Discipline is the bridge between goals and accomplishment.","Jim Rohn"],
+  ["You don't have to be great to start, but start to be great.","Zig Ziglar"],
+];
+
+// ── EXPOSE TO WINDOW ─────────────────────────────
+window.signInGoogle=signInGoogle; window.doSignOut=doSignOut;
+window.navigate=navigate; window.openM=openM; window.closeM=closeM;
+window.toggleSidebar=toggleSidebar; window.applyTheme=applyTheme;
+window.addTx=addTx; window.delTx=delTx; window.exportCSV=exportCSV;
+window.handleSlip=handleSlip; window.handleSlipDrop=handleSlipDrop;
+window.confirmOCR=confirmOCR;
+window.addHabit=addHabit; window.togHabit=togHabit;
+window.addTask=addTask; window.togTask=togTask; window.delTask=delTask; window.moveTask=moveTask;
+window.setTV=setTV; window.qAdd=qAdd;
+window.selMood=selMood; window.fmtD=fmtD; window.insD=insD; window.insEmoji=insEmoji;
+window.updWC=updWC; window.getLoc=getLoc; window.saveDiary=saveDiary;
+window.searchD=searchD; window.viewDiary=viewDiary; window.exportDiary=exportDiary;
+window.addGoal=addGoal; window.togMS=togMS; window.delGoal=delGoal;
+window.setPM=setPM; window.togglePom=togglePom; window.resetPom=resetPom;
+window.saveSet=saveSet; window.savePomSet=savePomSet;
+window.exportAll=exportAll; window.loadDemo=loadDemo; window.clearAll=clearAll;
+window.addCategory=addCategory; window.deleteCategory=deleteCategory;
+window.connectGmail=connectGmail; window.syncGmailTasks=syncGmailTasks;
+
+// ── AUTH ──────────────────────────────────────────
+async function signInGoogle(){
+  try{ await signInWithPopup(auth, new GoogleAuthProvider()); }
+  catch(e){ toast('Sign in failed: '+e.message); }
+}
+async function doSignOut(){
+  if(!confirm('Sign out?')) return;
+  unsubs.forEach(function(u){u();}); unsubs=[];
+  gmailToken=null;
+  await fbSignOut(auth);
+  document.getElementById('login-screen').style.display='flex';
+}
+
+onAuthStateChanged(auth, function(user){
+  if(user){
+    uid=user.uid;
+    document.getElementById('login-screen').style.display='none';
+    document.getElementById('sname').textContent=user.displayName||'User';
+    if(user.photoURL){ var img=document.createElement('img'); img.src=user.photoURL; document.getElementById('sav').innerHTML=''; document.getElementById('sav').appendChild(img); document.getElementById('set-photo').src=user.photoURL; document.getElementById('set-photo').style.display='block'; document.getElementById('set-photo-fb').style.display='none'; }
+    document.getElementById('set-dname').textContent=user.displayName||'-';
+    document.getElementById('set-email').textContent=user.email||'-';
+    setSyncStatus('syncing');
+    subscribeAll();
+    populateCatSelect();
+    // Load API key from config
+    if(S.cfg && S.cfg.anthropicKey) window._anthropicKey=S.cfg.anthropicKey;
+  } else {
+    document.getElementById('login-screen').style.display='flex';
+  }
+});
+
+// ── FIRESTORE ─────────────────────────────────────
+function col(n){ return collection(db,'users',uid,n); }
+function dc(c,id){ return doc(db,'users',uid,c,String(id)); }
+function cfgDoc(){ return doc(db,'users',uid,'meta','config'); }
+function setSyncStatus(st){ var dot=document.getElementById('sync-dot'),lbl=document.getElementById('sync-status'); if(st==='syncing'){dot.className='sync-dot syncing';lbl.textContent='Syncing...';}else if(st==='ok'){dot.className='sync-dot';lbl.textContent='Synced ✓';}else{dot.className='sync-dot offline';lbl.textContent='Offline';} }
+async function fsSet(c,id,data){ setSyncStatus('syncing'); try{ await setDoc(dc(c,id),data); setSyncStatus('ok'); }catch(e){ setSyncStatus('offline'); } }
+async function fsDel(c,id){ setSyncStatus('syncing'); try{ await deleteDoc(dc(c,id)); setSyncStatus('ok'); }catch(e){ setSyncStatus('offline'); } }
+async function fsSetHlog(date,logs){ setSyncStatus('syncing'); try{ await setDoc(doc(db,'users',uid,'hlogs',date),{logs:logs}); setSyncStatus('ok'); }catch(e){ setSyncStatus('offline'); } }
+async function fsSetCfg(data){ setSyncStatus('syncing'); try{ await setDoc(cfgDoc(),data,{merge:true}); setSyncStatus('ok'); }catch(e){ setSyncStatus('offline'); } }
+
+function subscribeAll(){
+  unsubs.forEach(function(u){u();}); unsubs=[];
+  unsubs.push(onSnapshot(cfgDoc(),function(snap){ if(snap.exists()){S.cfg=Object.assign(S.cfg,snap.data()); if(S.cfg.categories) S.categories=S.cfg.categories; applyTheme(S.cfg.theme||'dark'); populateCatSelect(); renderCatList();} setSyncStatus('ok'); }));
+  ['tx','habits','tasks','diary','goals','poms'].forEach(function(c){
+    unsubs.push(onSnapshot(col(c),function(snap){ S[c]=snap.docs.map(function(d){var data=d.data();data.id=data.id||d.id;return data;}); if(c==='tasks')S[c].sort(function(a,b){return(a.due||'').localeCompare(b.due||'');}); refreshCurrentPage(); setSyncStatus('ok'); }));
+  });
+  unsubs.push(onSnapshot(col('hlogs'),function(snap){ S.hlogs={}; snap.docs.forEach(function(d){S.hlogs[d.id]=d.data().logs||[];}); refreshCurrentPage(); }));
+}
+
+function refreshCurrentPage(){ var p=document.querySelector('.page.active'); if(!p) return; var id=p.id.replace('page-',''); if(id==='dashboard')renderDash(); else if(id==='finance')renderFin(); else if(id==='habits')renderHabits(); else if(id==='todos')renderTodos(); else if(id==='diary')renderDiary(); else if(id==='goals')renderGoals(); else if(id==='pomodoro')renderPom(); else if(id==='settings')renderSettings(); }
+
+// ── NAVIGATION ────────────────────────────────────
+function navigate(page){
+  document.querySelectorAll('.page').forEach(function(p){p.classList.remove('active');});
+  document.querySelectorAll('.nav-item').forEach(function(n){n.classList.remove('active');});
+  var pg=document.getElementById('page-'+page); if(!pg) return;
+  pg.classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(function(n){ var t=n.textContent.toLowerCase(); if(page==='dashboard'&&t.includes('dashboard'))n.classList.add('active'); else if(page==='finance'&&t.includes('finance'))n.classList.add('active'); else if(page==='habits'&&t.includes('habit'))n.classList.add('active'); else if(page==='todos'&&t.includes('to-do'))n.classList.add('active'); else if(page==='diary'&&t.includes('diary'))n.classList.add('active'); else if(page==='goals'&&t.includes('goal'))n.classList.add('active'); else if(page==='pomodoro'&&t.includes('pomodoro'))n.classList.add('active'); else if(page==='settings'&&t.includes('settings'))n.classList.add('active'); });
+  closeSidebar();
+  if(page==='dashboard')renderDash(); if(page==='finance')renderFin(); if(page==='habits')renderHabits(); if(page==='todos')renderTodos(); if(page==='diary')renderDiary(); if(page==='goals')renderGoals(); if(page==='pomodoro')renderPom(); if(page==='settings')renderSettings();
+}
+function toggleSidebar(){ document.getElementById('sidebar').classList.toggle('open'); }
+function closeSidebar(){ document.getElementById('sidebar').classList.remove('open'); }
+function openM(id){ document.getElementById(id).classList.add('open'); }
+function closeM(id){ document.getElementById(id).classList.remove('open'); }
+
+// ── UTILS ─────────────────────────────────────────
+function today(){ return new Date().toISOString().split('T')[0]; }
+function dOf(n){ var d=new Date(); d.setDate(d.getDate()+n); return d.toISOString().split('T')[0]; }
+function fmtCur(n){ var sym={THB:'฿',USD:'$',EUR:'€'}[S.cfg.cur||'THB']||'฿'; return sym+Math.abs(n).toLocaleString('th-TH',{minimumFractionDigits:0,maximumFractionDigits:0}); }
+function toast(msg){ var el=document.createElement('div'); el.textContent=msg; el.style.cssText='position:fixed;bottom:22px;left:50%;transform:translateX(-50%);background:var(--bg2);border:1px solid var(--bd2);color:var(--tx);padding:10px 22px;border-radius:40px;font-size:14px;z-index:9999;box-shadow:0 8px 28px rgba(0,0,0,.4)'; document.body.appendChild(el); setTimeout(function(){el.remove();},3000); }
+function dl(name,content,type){ var a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([content],{type:type})); a.download=name; a.click(); }
+function applyTheme(t){ document.documentElement.setAttribute('data-theme',t==='light'?'light':''); }
+
+// ── CATEGORIES ────────────────────────────────────
+function populateCatSelect(){
+  var sel=document.getElementById('fi-cat'); if(!sel) return;
+  sel.innerHTML=S.categories.map(function(c){ return '<option value="'+c.icon+' '+c.name+'">'+c.icon+' '+c.name+'</option>'; }).join('');
+}
+function renderCatList(){
+  var el=document.getElementById('cat-list'); if(!el) return;
+  el.innerHTML=S.categories.map(function(c,i){ return '<div style="display:flex;align-items:center;justify-content:space-between;padding:6px 10px;background:var(--gl);border-radius:var(--rs);margin-bottom:5px"><span>'+c.icon+' '+c.name+'</span><button onclick="deleteCategory('+i+')" style="background:none;border:none;color:var(--tx3);cursor:pointer;font-size:16px">×</button></div>'; }).join('');
+}
+async function addCategory(){
+  var icon=document.getElementById('new-cat-icon').value.trim()||'🏷️';
+  var name=document.getElementById('new-cat-name').value.trim();
+  if(!name){ alert('Enter category name'); return; }
+  S.categories.push({icon:icon,name:name});
+  document.getElementById('new-cat-icon').value=''; document.getElementById('new-cat-name').value='';
+  await fsSetCfg({categories:S.categories});
+  populateCatSelect(); renderCatList(); toast('✅ Category added!');
+}
+async function deleteCategory(i){
+  S.categories.splice(i,1);
+  await fsSetCfg({categories:S.categories});
+  populateCatSelect(); renderCatList();
+}
+
+// ── DASHBOARD ─────────────────────────────────────
+function renderDash(){
+  var now=new Date(),h=now.getHours();
+  document.getElementById('d-time').textContent=h<12?'Good morning ☀️':h<17?'Good afternoon 🌤️':'Good evening 🌙';
+  document.getElementById('d-greet').textContent='Hello, '+(S.cfg.name||'Friend')+'! 👋';
+  document.getElementById('d-date').textContent=now.toLocaleDateString('en-US',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+  document.getElementById('sname').textContent=S.cfg.name||'Friend';
+  var q=QUOTES[now.getDate()%QUOTES.length]; document.getElementById('d-quote').textContent='"'+q[0]+'"'; document.getElementById('d-author').textContent='— '+q[1];
+  var td=today(),ttx=S.tx.filter(function(t){return t.date===td;});
+  var inc=ttx.filter(function(t){return t.type==='income';}).reduce(function(s,t){return s+t.amount;},0);
+  var exp=ttx.filter(function(t){return t.type==='expense';}).reduce(function(s,t){return s+t.amount;},0);
+  document.getElementById('d-bal').textContent=fmtCur(inc-exp); document.getElementById('d-balsub').textContent=ttx.length?ttx.length+' transactions':'No entries';
+  var logs=S.hlogs[td]||[],hd=S.habits.filter(function(h2){return logs.indexOf(h2.id)>-1;}).length,ht=S.habits.length;
+  document.getElementById('d-hab').textContent=hd+'/'+ht; document.getElementById('d-habsub').textContent=ht?Math.round(hd/ht*100)+'% complete':'0%';
+  var tdt=S.tasks.filter(function(t){return !t.done&&t.due===td;});
+  document.getElementById('d-tsk').textContent=tdt.length; document.getElementById('d-tsksub').textContent=tdt.length?tdt.length+' due':'No tasks';
+  var ps=S.poms.filter(function(p){return p.date===td;}); document.getElementById('d-foc').textContent=ps.filter(function(p){return p.mode==='work';}).reduce(function(s,p){return s+p.dur;},0)+'m';
+  var de=S.diary.find(function(d2){return d2.date===td;});
+  if(de){document.getElementById('d-diaryst').innerHTML='<span class="badge bem">✅ Written</span>'; document.getElementById('d-diaryprev').textContent=de.content.substring(0,110)+'...';}
+  else{document.getElementById('d-diaryst').innerHTML='<span class="badge bro">Not Written</span>'; document.getElementById('d-diaryprev').textContent="You haven't written today.";}
+  var ghtml=''; S.goals.slice(0,3).forEach(function(g){ var pct=g.ms&&g.ms.length?Math.round(g.ms.filter(function(m){return m.done;}).length/g.ms.length*100):0; ghtml+='<div style="margin-bottom:10px"><div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:5px"><span>'+(g.icon||'🎯')+' '+g.title+'</span><span style="color:var(--tx3)">'+pct+'%</span></div><div class="pb"><div class="pf" style="background:linear-gradient(90deg,var(--violet),var(--em));width:'+pct+'%"></div></div></div>'; });
+  document.getElementById('d-goals').innerHTML=ghtml||'<div style="color:var(--tx3);font-size:13px">No goals yet.</div>';
+  var rhtml=''; S.tx.slice(-5).reverse().forEach(function(t){ var c=t.type==='income'?'var(--em)':'var(--ro)',bg=t.type==='income'?'rgba(16,185,129,.1)':'rgba(244,63,94,.1)'; rhtml+='<div class="txi"><div class="txicon" style="background:'+bg+'">'+t.cat.split(' ')[0]+'</div><div style="flex:1"><div style="font-size:13px;font-weight:500">'+(t.desc||t.cat)+'</div><div style="font-size:11px;color:var(--tx3)">'+t.cat+' · '+t.date+(t.time?' '+t.time:'')+'</div></div><div style="font-size:14px;font-weight:600;color:'+c+'">'+(t.type==='income'?'+':'-')+fmtCur(t.amount)+'</div></div>'; });
+  document.getElementById('d-tx').innerHTML=rhtml||'<div style="color:var(--tx3);font-size:13px">No transactions.</div>';
+  fetchWeather();
+}
+function fetchWeather(){ fetch('https://api.open-meteo.com/v1/forecast?latitude=13.36&longitude=100.98&current=temperature_2m,weather_code&timezone=Asia/Bangkok').then(function(r){return r.json();}).then(function(d){ var icons={0:'☀️',1:'🌤️',2:'⛅',3:'☁️',45:'🌫️',61:'🌧️',80:'🌦️',95:'⛈️'}; document.getElementById('d-wicon').textContent=icons[d.current.weather_code]||'🌡️'; document.getElementById('d-wtemp').textContent=Math.round(d.current.temperature_2m)+'°C'; document.getElementById('d-wdesc').textContent=S.cfg.loc||'Chon Buri'; }).catch(function(){}); }
+
+// ── FINANCE ───────────────────────────────────────
+async function addTx(){
+  var amt=parseFloat(document.getElementById('fi-amt').value)||0;
+  if(!amt){alert('Enter amount.');return;}
+  var tx={id:Date.now(),type:document.getElementById('fi-type').value,amount:amt,cat:document.getElementById('fi-cat').value,desc:document.getElementById('fi-desc').value,date:document.getElementById('fi-date').value||today(),time:document.getElementById('fi-time').value||''};
+  await fsSet('tx',tx.id,tx); closeM('mf'); document.getElementById('fi-amt').value=''; document.getElementById('fi-desc').value=''; document.getElementById('fi-time').value='';
+}
+async function delTx(id){ await fsDel('tx',id); }
+function renderFin(){
+  var mo=new Date().toISOString().slice(0,7),mtx=S.tx.filter(function(t){return t.date.startsWith(mo);});
+  var inc=mtx.filter(function(t){return t.type==='income';}).reduce(function(s,t){return s+t.amount;},0);
+  var exp=mtx.filter(function(t){return t.type==='expense';}).reduce(function(s,t){return s+t.amount;},0);
+  document.getElementById('f-inc').textContent=fmtCur(inc); document.getElementById('f-exp').textContent=fmtCur(exp); document.getElementById('f-bal').textContent=fmtCur(inc-exp); document.getElementById('f-cnt').textContent=mtx.length;
+  var html=''; S.tx.slice(-15).reverse().forEach(function(t){ var c=t.type==='income'?'var(--em)':'var(--ro)',bg=t.type==='income'?'rgba(16,185,129,.1)':'rgba(244,63,94,.1)'; html+='<div class="txi"><div class="txicon" style="background:'+bg+'">'+t.cat.split(' ')[0]+'</div><div style="flex:1"><div style="font-size:13px;font-weight:500">'+(t.desc||t.cat)+'</div><div style="font-size:11px;color:var(--tx3)">'+t.cat+' · '+t.date+(t.time?' '+t.time:'')+'</div></div><div style="display:flex;align-items:center;gap:7px"><span style="font-size:13px;font-weight:600;color:'+c+'">'+(t.type==='income'?'+':'-')+fmtCur(t.amount)+'</span><button onclick="delTx('+t.id+')" style="background:none;border:none;color:var(--tx3);cursor:pointer;font-size:17px">×</button></div></div>'; });
+  document.getElementById('f-list').innerHTML=html||'<div style="color:var(--tx3);font-size:13px;padding:10px">No transactions yet.</div>';
+  renderFinCharts(mtx);
+}
+function renderFinCharts(txs){
+  var days=[],labels=[]; for(var i=6;i>=0;i--){var d=new Date();d.setDate(d.getDate()-i);days.push(d.toISOString().split('T')[0]);labels.push(d.toLocaleDateString('en',{weekday:'short'}));}
+  var iD=days.map(function(d){return txs.filter(function(t){return t.date===d&&t.type==='income';}).reduce(function(s,t){return s+t.amount;},0);});
+  var eD=days.map(function(d){return txs.filter(function(t){return t.date===d&&t.type==='expense';}).reduce(function(s,t){return s+t.amount;},0);});
+  if(CH.fbar)CH.fbar.destroy(); CH.fbar=new Chart(document.getElementById('fbar').getContext('2d'),{type:'bar',data:{labels:labels,datasets:[{label:'Income',data:iD,backgroundColor:'rgba(16,185,129,.7)',borderRadius:4},{label:'Expense',data:eD,backgroundColor:'rgba(244,63,94,.7)',borderRadius:4}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#94A3B8',font:{size:11}}}},scales:{x:{ticks:{color:'#64748B'},grid:{display:false}},y:{ticks:{color:'#64748B'},grid:{color:'rgba(255,255,255,.05)'}}}}});
+  var cats={}; txs.filter(function(t){return t.type==='expense';}).forEach(function(t){cats[t.cat]=(cats[t.cat]||0)+t.amount;});
+  if(CH.fdnt)CH.fdnt.destroy(); CH.fdnt=new Chart(document.getElementById('fdnt').getContext('2d'),{type:'doughnut',data:{labels:Object.keys(cats),datasets:[{data:Object.values(cats),backgroundColor:['#7C3AED','#10B981','#F59E0B','#F43F5E','#3B82F6','#EC4899','#14B8A6','#F97316','#8B5CF6'],borderWidth:0}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'right',labels:{color:'#94A3B8',font:{size:11},padding:6}}}}});
+}
+function exportCSV(){ var csv=['Date,Time,Type,Category,Description,Amount'].concat(S.tx.map(function(t){return t.date+','+(t.time||'')+','+t.type+','+t.cat+',"'+(t.desc||'')+'",'+t.amount;})).join('\n'); dl('transactions.csv',csv,'text/csv'); }
+
+// ── BANK SLIP OCR (Claude AI) ─────────────────────
+function handleSlip(e){ var file=e.target.files[0]; if(file) processSlip(file); }
+function handleSlipDrop(e){ e.preventDefault(); var f=e.dataTransfer.files[0]; if(f) processSlip(f); document.getElementById('slip-zone').style.borderColor='var(--bd2)'; }
+
+function processSlip(file){
+  var reader=new FileReader();
+  reader.onload=function(ev){
+    document.getElementById('slip-prev').style.display='block';
+    document.getElementById('slip-img').src=ev.target.result;
+    document.getElementById('ocr-loading').style.display='flex';
+    document.getElementById('ocr-result').style.display='none';
+    var base64=ev.target.result.split(',')[1];
+    var mediaType=file.type||'image/jpeg';
+    callClaudeOCR(base64, mediaType);
+  };
+  reader.readAsDataURL(file);
+}
+
+async function callClaudeOCR(base64, mediaType){
+  try{
+    var apiKey = window._anthropicKey || S.cfg.anthropicKey || '';
+    if(!apiKey){ document.getElementById('ocr-loading').style.display='none'; document.getElementById('ocr-result').style.display='block'; document.getElementById('ocr-result').innerHTML='<div style="color:var(--ro);font-size:13px">❌ กรุณากรอก Anthropic API Key ใน Settings ก่อนครับ</div>'; return; }
+    var resp = await fetch(PROXY_URL,{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        apiKey: apiKey,
+        payload: {
+        model:'claude-sonnet-4-20250514',
+        max_tokens:500,
+        messages:[{
+          role:'user',
+          content:[
+            {type:'image',source:{type:'base64',media_type:mediaType,data:base64}},
+            {type:'text',text:'นี่คือ slip โอนเงินธนาคารไทย กรุณาอ่านและตอบในรูปแบบ JSON เท่านั้น ไม่ต้องมีข้อความอื่น:\n{"amount":0,"date":"YYYY-MM-DD","time":"HH:MM","from":"","to":"","bank":"","type":"expense","description":""}\n\nถ้าไม่มีข้อมูลใส่ค่าว่าง amount ใส่เป็นตัวเลข'}
+          ]
+        }]
+        }}
+      })
+    });
+    var data=await resp.json();
+    var text=data.content[0].text;
+    var clean=text.replace(/```json|```/g,'').trim();
+    var result=JSON.parse(clean);
+    showOCRResult(result);
+  }catch(e){
+    document.getElementById('ocr-loading').style.display='none';
+    document.getElementById('ocr-result').style.display='block';
+    document.getElementById('ocr-result').style.background='rgba(244,63,94,.1)';
+    document.getElementById('ocr-result').style.borderColor='rgba(244,63,94,.3)';
+    document.getElementById('ocr-result').innerHTML='<div style="color:var(--ro);font-size:13px">❌ OCR Error: '+e.message+'</div>';
+  }
+}
+
+function showOCRResult(r){
+  document.getElementById('ocr-loading').style.display='none';
+  document.getElementById('ocr-result').style.display='block';
+  document.getElementById('ocr-result').innerHTML='<div style="font-size:13px;color:var(--em);font-weight:600;margin-bottom:8px">✅ อ่าน Slip สำเร็จ!</div><div style="font-size:13px;color:var(--tx2)">💰 จำนวน: <b style="color:var(--tx)">฿'+r.amount+'</b><br>📅 วันที่: '+r.date+' '+r.time+'<br>🏦 ธนาคาร: '+(r.bank||'N/A')+'<br>📝 '+(r.description||r.from||'')+'</div><button class="btn bp bsm" style="margin-top:10px;width:100%" onclick="confirmOCR('+JSON.stringify(r).replace(/"/g,"'")+')" >✅ บันทึก Transaction</button>';
+  // Open pre-filled modal
+  document.getElementById('fi-amt').value=r.amount||'';
+  document.getElementById('fi-date').value=r.date||today();
+  document.getElementById('fi-time').value=r.time||'';
+  document.getElementById('fi-desc').value=r.description||r.from||'Bank Transfer';
+  document.getElementById('fi-type').value=r.type||'expense';
+  openM('mf');
+}
+
+function confirmOCR(r){
+  document.getElementById('fi-amt').value=r.amount||'';
+  document.getElementById('fi-date').value=r.date||today();
+  document.getElementById('fi-time').value=r.time||'';
+  document.getElementById('fi-desc').value=r.description||r.from||'Bank Transfer';
+  closeM('m-ocr'); openM('mf');
+}
+
+// ── HABITS ────────────────────────────────────────
+async function addHabit(){ var name=document.getElementById('hb-name').value.trim(); if(!name){alert('Enter name.');return;} var h={id:Date.now(),name:name,icon:document.getElementById('hb-icon').value||'✅',cat:document.getElementById('hb-cat').value,goal:parseInt(document.getElementById('hb-goal').value)||30,created:today()}; await fsSet('habits',h.id,h); closeM('mh'); document.getElementById('hb-name').value=''; document.getElementById('hb-icon').value=''; }
+async function togHabit(id){ var td=today(); var logs=Array.from(S.hlogs[td]||[]); var idx=logs.indexOf(id); if(idx>-1)logs.splice(idx,1); else{logs.push(id);sparkle();} await fsSetHlog(td,logs); }
+function sparkle(){ var el=document.createElement('div'); el.textContent='✨'; el.style.cssText='position:fixed;font-size:30px;pointer-events:none;z-index:9999;left:'+(Math.random()*80+10)+'%;top:50%;animation:fi .8s ease forwards'; document.body.appendChild(el); setTimeout(function(){el.remove();},900); }
+function getStreak(hid){ var s=0,d=new Date(); for(var i=0;i<365;i++){var ds=d.toISOString().split('T')[0];if((S.hlogs[ds]||[]).indexOf(hid)>-1){s++;d.setDate(d.getDate()-1);}else break;} return s; }
+function renderHabits(){
+  var td=today(),logs=S.hlogs[td]||[],done=S.habits.filter(function(h){return logs.indexOf(h.id)>-1;}).length,tot=S.habits.length;
+  document.getElementById('h-today').textContent=done+'/'+tot; document.getElementById('h-pct').textContent=tot?Math.round(done/tot*100)+'% complete':'0%'; document.getElementById('h-cnt').textContent=tot;
+  var best=0,total=0; S.habits.forEach(function(h){var s=getStreak(h.id);if(s>best)best=s;}); Object.values(S.hlogs).forEach(function(l){total+=l.length;}); document.getElementById('h-best').textContent=best+'d'; document.getElementById('h-total').textContent=total;
+  var html=''; S.habits.forEach(function(h){var d2=logs.indexOf(h.id)>-1,st=getStreak(h.id); html+='<div class="hc" onclick="togHabit('+h.id+')" style="'+(d2?'opacity:.7':'')+'"><div class="hch '+(d2?'ck':'')+'">'+(d2?'✓':'')+'</div><div style="flex:1"><div style="font-size:14px;font-weight:500;'+(d2?'text-decoration:line-through;color:var(--tx3)':'')+'">'+h.icon+' '+h.name+'</div><div style="font-size:11px;color:var(--tx3)">'+h.cat+' · Goal: '+h.goal+'d</div></div><div style="text-align:right"><div style="font-size:13px;font-weight:600">'+st+'🔥</div></div></div>'; });
+  document.getElementById('h-list').innerHTML=html||'<div style="color:var(--tx3);font-size:13px;padding:10px">No habits yet.</div>';
+  var days=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],whtml='<div style="display:grid;grid-template-columns:80px repeat(7,1fr);gap:3px;font-size:10px;color:var(--tx3);margin-bottom:3px"><div></div>'+days.map(function(d){return '<div style="text-align:center">'+d+'</div>';}).join('')+'</div>';
+  S.habits.slice(0,5).forEach(function(h){whtml+='<div style="display:grid;grid-template-columns:80px repeat(7,1fr);gap:3px;align-items:center;margin-bottom:3px"><div style="font-size:10px;color:var(--tx2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+h.icon+' '+h.name.substring(0,7)+'</div>'; for(var i=6;i>=0;i--){var d=new Date();d.setDate(d.getDate()-i);var ds=d.toISOString().split('T')[0];var ok=(S.hlogs[ds]||[]).indexOf(h.id)>-1;whtml+='<div class="wc2 '+(ok?'dn':'')+'" title="'+ds+'"></div>';} whtml+='</div>';});
+  document.getElementById('h-week').innerHTML=whtml;
+  if(CH.hab)CH.hab.destroy(); var hnames=S.habits.slice(0,6).map(function(h){return h.name.substring(0,9);}),rates=S.habits.slice(0,6).map(function(h){var c=0;for(var i=0;i<7;i++){var d=new Date();d.setDate(d.getDate()-i);var ds=d.toISOString().split('T')[0];if((S.hlogs[ds]||[]).indexOf(h.id)>-1)c++;}return Math.round(c/7*100);});
+  CH.hab=new Chart(document.getElementById('hchart').getContext('2d'),{type:'bar',data:{labels:hnames,datasets:[{label:'7-day %',data:rates,backgroundColor:'rgba(124,58,237,.7)',borderRadius:4}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{color:'#64748B'},grid:{display:false}},y:{max:100,ticks:{color:'#64748B',callback:function(v){return v+'%';}},grid:{color:'rgba(255,255,255,.05)'}}}}});
+}
+
+// ── GMAIL TASKS ────────────────────────────────────
+function connectGmail(){
+  if(!window.google||!window.google.accounts){ loadGoogleScript(function(){ initGoogleClient(); }); }
+  else{ initGoogleClient(); }
+}
+function loadGoogleScript(cb){
+  var s=document.createElement('script'); s.src='https://accounts.google.com/gsi/client'; s.onload=cb; document.head.appendChild(s);
+}
+function initGoogleClient(){
+  var client=google.accounts.oauth2.initTokenClient({
+    client_id:GOOGLE_CLIENT_ID,
+    scope:GMAIL_SCOPE,
+    callback:function(response){
+      if(response.access_token){
+        gmailToken=response.access_token;
+        toast('✅ Gmail Tasks connected!');
+        getOrCreateTaskList();
+        updateGmailUI(true);
+      }
+    }
+  });
+  client.requestAccessToken();
+}
+async function getOrCreateTaskList(){
+  try{
+    var r=await fetch('https://tasks.googleapis.com/tasks/v1/users/@me/lists',{headers:{Authorization:'Bearer '+gmailToken}});
+    var data=await r.json();
+    var list=data.items&&data.items.find(function(l){return l.title==='LifeOS';});
+    if(!list){
+      var cr=await fetch('https://tasks.googleapis.com/tasks/v1/users/@me/lists',{method:'POST',headers:{Authorization:'Bearer '+gmailToken,'Content-Type':'application/json'},body:JSON.stringify({title:'LifeOS'})});
+      var nl=await cr.json(); gmailTaskListId=nl.id;
+    } else { gmailTaskListId=list.id; }
+    syncGmailTasks();
+  }catch(e){ toast('Gmail Tasks error: '+e.message); }
+}
+async function syncGmailTasks(){
+  if(!gmailToken||!gmailTaskListId){ toast('Connect Gmail first'); return; }
+  try{
+    // Push local tasks to Gmail
+    for(var i=0;i<S.tasks.length;i++){
+      var t=S.tasks[i];
+      if(!t.gmailId){
+        var due=t.due?t.due+'T00:00:00.000Z':null;
+        var body={title:t.title,notes:t.desc||'',status:t.done?'completed':'needsAction'};
+        if(due)body.due=due;
+        var r=await fetch('https://tasks.googleapis.com/tasks/v1/lists/'+gmailTaskListId+'/tasks',{method:'POST',headers:{Authorization:'Bearer '+gmailToken,'Content-Type':'application/json'},body:JSON.stringify(body)});
+        var gTask=await r.json();
+        var updated=Object.assign({},t,{gmailId:gTask.id});
+        await fsSet('tasks',t.id,updated);
+      }
+    }
+    // Pull Gmail tasks
+    var lr=await fetch('https://tasks.googleapis.com/tasks/v1/lists/'+gmailTaskListId+'/tasks?showCompleted=true',{headers:{Authorization:'Bearer '+gmailToken}});
+    var ldata=await lr.json();
+    if(todoView==='gmail') renderGmailTasks(ldata.items||[]);
+    toast('✅ Gmail Tasks synced! ('+((ldata.items||[]).length)+' tasks)');
+  }catch(e){ toast('Sync error: '+e.message); }
+}
+function renderGmailTasks(items){
+  var html='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px"><span style="font-size:13px;color:var(--tx2)">'+items.length+' tasks in Gmail Tasks</span><button class="btn bp bsm" onclick="syncGmailTasks()">🔄 Sync</button></div>';
+  items.forEach(function(t){
+    var done=t.status==='completed';
+    html+='<div class="gtask-item"><div class="gtask-check '+(done?'done':'')+'"></div><div style="flex:1"><div style="font-size:13px;'+(done?'text-decoration:line-through;color:var(--tx3)':'')+'">'+t.title+'</div>'+(t.notes?'<div style="font-size:11px;color:var(--tx3)">'+t.notes+'</div>':'')+'</div>'+(t.due?'<span class="badge bgr">'+t.due.split('T')[0]+'</span>':'')+'</div>';
+  });
+  document.getElementById('tl-gmail').innerHTML=html||'<div style="color:var(--tx3);font-size:13px;padding:10px">No Gmail Tasks yet.</div>';
+}
+function updateGmailUI(connected){
+  var statusBar=document.getElementById('gmail-status-bar');
+  var setStatus=document.getElementById('gmail-set-status');
+  if(connected){
+    if(statusBar) statusBar.innerHTML='<div class="gmail-status gmail-connected">✅ Gmail Tasks connected · <button onclick="syncGmailTasks()" style="background:none;border:none;color:var(--em);cursor:pointer;font-weight:600">Sync Now</button></div>';
+    if(setStatus) setStatus.innerHTML='<div class="gmail-status gmail-connected" style="margin-bottom:8px">✅ Connected</div>';
+    var syncBtn=document.getElementById('gmail-sync-btn'); if(syncBtn)syncBtn.style.display='block';
+    var connectBtn=document.getElementById('gmail-connect-btn'); if(connectBtn)connectBtn.textContent='🔄 Reconnect Gmail';
+    var ind=document.getElementById('gmail-sync-indicator'); if(ind){ind.className='badge bem';ind.textContent='Connected';}
+  } else {
+    if(statusBar) statusBar.innerHTML='<div class="gmail-status gmail-disconnected">⚠️ Gmail Tasks not connected · <button onclick="connectGmail()" style="background:none;border:none;color:var(--ro);cursor:pointer;font-weight:600">Connect</button></div>';
+    if(setStatus) setStatus.innerHTML='<div class="gmail-status gmail-disconnected" style="margin-bottom:8px">⚠️ Not connected</div>';
+  }
+}
+
+// ── TODOS ─────────────────────────────────────────
+function qAdd(){ var inp=document.getElementById('qtask'),raw=inp.value.trim(); if(!raw)return; var p=parseNL(raw); addTaskObj({id:Date.now(),title:p.title,due:p.due,time:p.time,priority:'medium',done:false,doneAt:null,tags:[],desc:'',status:'todo'}); inp.value=''; }
+function parseNL(text){ var title=text,due=null,time=null; if(/tomorrow/i.test(text)){var d=new Date();d.setDate(d.getDate()+1);due=d.toISOString().split('T')[0];title=title.replace(/tomorrow/i,'').trim();}else if(/today/i.test(text)){due=today();title=title.replace(/today/i,'').trim();} var tm=text.match(/at\s+(\d{1,2})(?::(\d{2}))?\s*(am|pm)?/i); if(tm){var hh=parseInt(tm[1]);var mm=tm[2]||'00';var ap=tm[3];if(ap&&ap.toLowerCase()==='pm'&&hh<12)hh+=12;if(ap&&ap.toLowerCase()==='am'&&hh===12)hh=0;time=String(hh).padStart(2,'0')+':'+mm;title=title.replace(tm[0],'').trim();} return{title:title||text,due:due,time:time}; }
+async function addTask(){ var tit=document.getElementById('tk-title').value.trim(); if(!tit){alert('Enter title.');return;} var t={id:Date.now(),title:tit,desc:document.getElementById('tk-desc').value,due:document.getElementById('tk-due').value,time:document.getElementById('tk-time').value,priority:document.getElementById('tk-pri').value,tags:document.getElementById('tk-tags').value.split(',').map(function(t2){return t2.trim();}).filter(Boolean),done:false,doneAt:null,status:'todo'}; await addTaskObj(t); closeM('mt'); document.getElementById('tk-title').value=''; document.getElementById('tk-desc').value=''; document.getElementById('tk-tags').value=''; }
+async function addTaskObj(t){ await fsSet('tasks',t.id,t); if(gmailToken&&gmailTaskListId){ try{ var body={title:t.title,notes:t.desc||'',status:'needsAction'}; if(t.due)body.due=t.due+'T00:00:00.000Z'; var r=await fetch('https://tasks.googleapis.com/tasks/v1/lists/'+gmailTaskListId+'/tasks',{method:'POST',headers:{Authorization:'Bearer '+gmailToken,'Content-Type':'application/json'},body:JSON.stringify(body)}); var gTask=await r.json(); var updated=Object.assign({},t,{gmailId:gTask.id}); await fsSet('tasks',t.id,updated); toast('📧 Task synced to Gmail!'); }catch(e){} } }
+async function togTask(id){ var t=S.tasks.find(function(t2){return t2.id===id;}); if(!t)return; var updated=Object.assign({},t,{done:!t.done,doneAt:!t.done?new Date().toISOString():null,status:!t.done?'done':'todo'}); await fsSet('tasks',id,updated); if(gmailToken&&t.gmailId){ try{ await fetch('https://tasks.googleapis.com/tasks/v1/lists/'+gmailTaskListId+'/tasks/'+t.gmailId,{method:'PATCH',headers:{Authorization:'Bearer '+gmailToken,'Content-Type':'application/json'},body:JSON.stringify({status:updated.done?'completed':'needsAction'})}); }catch(e){} } }
+async function delTask(id){ await fsDel('tasks',id); }
+async function moveTask(id,st){ var t=S.tasks.find(function(t2){return t2.id===id;}); if(t){ var updated=Object.assign({},t,{status:st,done:st==='done'}); await fsSet('tasks',id,updated); } }
+function setTV(view,el){ todoView=view; document.querySelectorAll('#ttabs .tab').forEach(function(t){t.classList.remove('active');}); el.classList.add('active'); ['today','upcoming','kanban','all','done','gmail'].forEach(function(v){var el2=document.getElementById('tv-'+v);if(el2)el2.style.display=v===view?'block':'none';}); updateGmailUI(!!gmailToken); renderTodos(); if(view==='gmail'&&gmailToken) syncGmailTasks(); }
+function tItem(t){ var pi={high:'🔴',medium:'🟡',low:'🟢'}; var tags=t.tags&&t.tags.length?t.tags.map(function(tag){return '<span class="badge bv">'+tag+'</span>';}).join(''):''; return '<div class="tski"><div class="tskck '+(t.done?'dn':'')+'" onclick="togTask('+t.id+')">'+(t.done?'✓':'')+'</div><div style="flex:1"><div style="font-size:14px;font-weight:500;'+(t.done?'text-decoration:line-through;color:var(--tx3)':'')+'">'+( pi[t.priority]||'')+' '+t.title+(t.gmailId?'<span class="badge bem" style="margin-left:5px">📧</span>':'')+'</div>'+(t.desc?'<div style="font-size:12px;color:var(--tx3);margin-top:2px">'+t.desc+'</div>':'')+'<div style="display:flex;gap:5px;margin-top:4px;flex-wrap:wrap">'+(t.due?'<span class="badge bgr">'+t.due+(t.time?' '+t.time:'')+'</span>':'')+tags+'</div></div><button onclick="delTask('+t.id+')" style="background:none;border:none;color:var(--tx3);cursor:pointer;font-size:17px;padding:3px">×</button></div>'; }
+function renderTodos(){
+  var td=today(),tdT=S.tasks.filter(function(t){return t.due===td;}),dnC=tdT.filter(function(t){return t.done;}).length,pct=tdT.length?Math.round(dnC/tdT.length*100):0;
+  document.getElementById('t-prog').style.width=pct+'%'; document.getElementById('t-proglbl').textContent=pct+'% completed today ('+dnC+'/'+tdT.length+')';
+  if(todoView==='today')document.getElementById('tl-today').innerHTML=tdT.map(tItem).join('')||'<div style="color:var(--tx3);font-size:13px;padding:10px">No tasks today.</div>';
+  if(todoView==='upcoming'){var up=S.tasks.filter(function(t){return !t.done&&t.due>td;}).sort(function(a,b){return a.due.localeCompare(b.due);}); document.getElementById('tl-upcoming').innerHTML=up.map(tItem).join('')||'<div style="color:var(--tx3);font-size:13px;padding:10px">No upcoming tasks.</div>';}
+  if(todoView==='all')document.getElementById('tl-all').innerHTML=S.tasks.filter(function(t){return !t.done;}).map(tItem).join('')||'<div style="color:var(--tx3);font-size:13px;padding:10px">No tasks.</div>';
+  if(todoView==='done')document.getElementById('tl-done').innerHTML=S.tasks.filter(function(t){return t.done;}).map(tItem).join('')||'<div style="color:var(--tx3);font-size:13px;padding:10px">No completed tasks.</div>';
+  if(todoView==='kanban')renderKanban();
+  updateGmailUI(!!gmailToken);
+  var sel=document.getElementById('p-task'); if(sel){sel.innerHTML='<option value="">— None —</option>'+S.tasks.filter(function(t){return !t.done;}).map(function(t){return '<option value="'+t.id+'">'+t.title+'</option>';}).join('');}
+}
+function renderKanban(){ var cols={todo:'📋 To Do',in_progress:'⚡ In Progress',done:'✅ Done'},html=''; for(var st in cols){var tasks=S.tasks.filter(function(t){return t.status===st;}); html+='<div class="kc"><div style="font-size:13px;font-weight:600;margin-bottom:10px;display:flex;justify-content:space-between">'+cols[st]+'<span class="badge bgr">'+tasks.length+'</span></div>'; tasks.forEach(function(t){ var pc={high:'bro',medium:'bam',low:'bem'}[t.priority]||'bgr'; html+='<div class="kcard"><div style="font-size:13px;font-weight:500;margin-bottom:6px">'+t.title+(t.gmailId?'<span class="badge bem" style="margin-left:4px;font-size:10px">📧</span>':'')+'</div><div style="display:flex;gap:5px;flex-wrap:wrap"><span class="badge '+pc+'">'+t.priority+'</span>'+(t.due?'<span class="badge bgr">'+t.due+'</span>':'')+'</div><div style="display:flex;gap:4px;margin-top:8px">'; if(st!=='done')html+='<button class="btn bg bsm" onclick="moveTask('+t.id+','+(st==='todo'?'"in_progress"':'"done"')+')">→</button>'; html+='<button class="btn bg bsm" onclick="delTask('+t.id+')">×</button></div></div>'; }); html+='</div>'; } document.getElementById('kanban').innerHTML=html; }
+
+// ── DIARY ─────────────────────────────────────────
+function selMood(mood,el){document.querySelectorAll('.mb').forEach(function(b){b.classList.remove('sel');});el.classList.add('sel');curMood=mood;curMoodE=el.textContent.charAt(0);}
+function fmtD(cmd){document.execCommand(cmd);}
+function insD(t){var ta=document.getElementById('diary-ed');ta.value+=t;ta.focus();}
+function insEmoji(){var e='😊😄🥰😂😎🤔💡🎉🌟💪🙏❤️🍀🎵🌈';insD(e[Math.floor(Math.random()*e.length)]);}
+function updWC(){var w=document.getElementById('diary-ed').value.trim().split(/\s+/).filter(Boolean).length;document.getElementById('d-wc').textContent=w+' words';}
+function getLoc(){if(!navigator.geolocation){alert('Not supported');return;}navigator.geolocation.getCurrentPosition(function(pos){fetch('https://nominatim.openstreetmap.org/reverse?lat='+pos.coords.latitude+'&lon='+pos.coords.longitude+'&format=json').then(function(r){return r.json();}).then(function(d){var loc=d.address.city||d.address.town||'Unknown';document.getElementById('d-loc').value=loc+', '+(d.address.country||'');}).catch(function(){document.getElementById('d-loc').value=pos.coords.latitude.toFixed(2)+', '+pos.coords.longitude.toFixed(2);});},function(){alert('Could not get location.');});}
+async function saveDiary(){var content=document.getElementById('diary-ed').value.trim();if(!content){alert('Write something first!');return;}var td=today();var entry={id:td,date:td,content:content,mood:curMood,moodE:curMoodE,loc:document.getElementById('d-loc').value,wx:document.getElementById('d-wx').value,tags:document.getElementById('d-tags').value.split(',').map(function(t){return t.trim();}).filter(Boolean),wc:content.trim().split(/\s+/).filter(Boolean).length,created:new Date().toISOString()};await fsSet('diary',td,entry);toast('📖 Diary saved & synced!');}
+function renderDiary(){var now=new Date();document.getElementById('diary-dl').textContent=now.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'});var td=today(),de=S.diary.find(function(d2){return d2.date===td;});if(de){document.getElementById('diary-ed').value=de.content;document.getElementById('d-loc').value=de.loc||'';document.getElementById('d-wx').value=de.wx||'';document.getElementById('d-tags').value=(de.tags||[]).join(', ');updWC();}renderDiaryList(S.diary);renderMoodChart();}
+function renderDiaryList(list){var html='';list.slice().reverse().slice(0,25).forEach(function(e){html+='<div class="de" onclick="viewDiary(\''+e.date+'\')"><div style="display:flex;align-items:center;gap:7px;margin-bottom:6px;font-size:11px;color:var(--tx3)">'+(e.moodE||'📖')+' <span>'+e.date+'</span>'+(e.loc?'<span>📍 '+e.loc+'</span>':'')+'<span>'+e.wc+' words</span></div><div style="font-size:13px;color:var(--tx2);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">'+e.content+'</div></div>';});document.getElementById('d-elist').innerHTML=html||'<div style="color:var(--tx3);font-size:13px;padding:10px">No entries yet.</div>';}
+function viewDiary(date){var e=S.diary.find(function(d){return d.date===date;});if(!e)return;document.getElementById('dv-title').textContent='📖 '+e.date+' '+(e.moodE||'');var tags=e.tags&&e.tags.length?e.tags.map(function(t){return '<span class="badge bem" style="margin-right:4px">'+t+'</span>';}).join(''):'';document.getElementById('dv-body').innerHTML='<div style="display:flex;gap:7px;margin-bottom:12px;flex-wrap:wrap">'+(e.mood?'<span class="badge bv">'+e.moodE+' '+e.mood+'</span>':'')+(e.loc?'<span class="badge bgr">📍 '+e.loc+'</span>':'')+(e.wx?'<span class="badge bgr">🌤️ '+e.wx+'</span>':'')+'<span class="badge bgr">'+e.wc+' words</span></div><div style="font-size:14px;line-height:1.75;color:var(--tx);white-space:pre-wrap">'+e.content+'</div>'+(tags?'<div style="margin-top:12px">'+tags+'</div>':'');openM('m-dview');}
+function searchD(q){var f=q?S.diary.filter(function(e){return e.content.toLowerCase().includes(q.toLowerCase())||(e.tags||[]).join(' ').includes(q.toLowerCase());}):S.diary;renderDiaryList(f);}
+function renderMoodChart(){var ms={amazing:5,good:4,neutral:3,sad:2,stressed:1},dates=[];for(var i=29;i>=0;i--){var d=new Date();d.setDate(d.getDate()-i);dates.push(d.toISOString().split('T')[0]);}var scores=dates.map(function(d){var e=S.diary.find(function(en){return en.date===d;});return e&&e.mood?ms[e.mood]:null;});if(CH.mood)CH.mood.destroy();CH.mood=new Chart(document.getElementById('mchart').getContext('2d'),{type:'line',data:{labels:dates.map(function(d){return d.slice(5);}),datasets:[{data:scores,borderColor:'var(--violet)',backgroundColor:'rgba(124,58,237,.1)',tension:.4,fill:true,spanGaps:true,pointBackgroundColor:'var(--violet)',pointRadius:3}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{color:'#64748B',maxTicksLimit:8},grid:{display:false}},y:{min:0,max:6,ticks:{color:'#64748B',callback:function(v){return['','😤','😔','😐','🙂','😄'][v]||'';}},grid:{color:'rgba(255,255,255,.05)'}}}}}); }
+function exportDiary(){var text=S.diary.map(function(e){return e.date+'\n'+(e.moodE||'')+' '+(e.mood||'')+' | '+(e.loc||'N/A')+' | '+(e.wx||'N/A')+'\n\n'+e.content+'\n\n'+'—'.repeat(30)+'\n';}).join('\n');dl('diary.txt',text,'text/plain');}
+
+// ── GOALS ─────────────────────────────────────────
+async function addGoal(){var tit=document.getElementById('gl-title').value.trim();if(!tit){alert('Enter title.');return;}var cat=document.getElementById('gl-cat').value;var icons={Career:'💼',Health:'🏃',Finance:'💰',Learning:'📚',Relationships:'❤️',Personal:'✨'};var g={id:Date.now(),title:tit,cat:cat,deadline:document.getElementById('gl-dl').value,desc:document.getElementById('gl-desc').value,icon:icons[cat]||'🎯',ms:document.getElementById('gl-ms').value.split('\n').filter(Boolean).map(function(m,i){return{id:i,text:m,done:false};}),created:today()};await fsSet('goals',g.id,g);closeM('mg');document.getElementById('gl-title').value='';document.getElementById('gl-desc').value='';document.getElementById('gl-ms').value='';}
+async function togMS(gid,mid){var g=S.goals.find(function(g2){return g2.id===gid;});if(!g)return;var ms=g.ms.map(function(m){return m.id===mid?Object.assign({},m,{done:!m.done}):m;});if(ms.filter(function(m){return m.done;}).length===ms.length)celebrate();var updated=Object.assign({},g,{ms:ms});await fsSet('goals',gid,updated);}
+async function delGoal(id){await fsDel('goals',id);}
+function renderGoals(){var html='';S.goals.forEach(function(g){var pct=g.ms&&g.ms.length?Math.round(g.ms.filter(function(m){return m.done;}).length/g.ms.length*100):0;var dl2=g.deadline?Math.ceil((new Date(g.deadline)-new Date())/86400000):null;var dlS=dl2!==null?(dl2>0?dl2+' days left':'⚠️ Overdue'):'';var ms='';(g.ms||[]).forEach(function(m){ms+='<div class="mstone"><div class="mck '+(m.done?'dn':'')+'" onclick="togMS('+g.id+','+m.id+')">'+(m.done?'✓':'')+'</div><div style="'+(m.done?'text-decoration:line-through;color:var(--tx3);':'')+'font-size:13px">'+m.text+'</div></div>';});html+='<div class="gcard"><div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px"><div><div style="font-size:15px;font-weight:600">'+g.icon+' '+g.title+'</div><div style="font-size:11px;color:var(--tx3)">'+g.cat+(dlS?' · '+dlS:'')+'</div></div><div style="display:flex;align-items:center;gap:7px"><span class="badge bv">'+pct+'%</span><button onclick="delGoal('+g.id+')" style="background:none;border:none;color:var(--tx3);cursor:pointer;font-size:17px">×</button></div></div>'+(g.desc?'<div style="font-size:13px;color:var(--tx2);margin-bottom:10px">'+g.desc+'</div>':'')+'<div class="pb" style="margin-bottom:10px"><div class="pf" style="background:linear-gradient(90deg,var(--violet),var(--em));width:'+pct+'%"></div></div>'+ms+'</div>';});document.getElementById('g-list').innerHTML=html||'<div class="card" style="text-align:center;padding:36px;color:var(--tx2)"><div style="font-size:44px;margin-bottom:10px">🎯</div><div>No goals yet.</div></div>';}
+function celebrate(){var colors=['#7C3AED','#10B981','#F59E0B','#F43F5E','#3B82F6'];for(var i=0;i<60;i++){var el=document.createElement('div');el.className='cfp';el.style.cssText='left:'+(Math.random()*100)+'%;top:-10px;background:'+colors[Math.floor(Math.random()*colors.length)]+';animation-delay:'+(Math.random()*.5)+'s;animation-duration:'+(1.5+Math.random())+'s';document.body.appendChild(el);setTimeout(function(){el.remove();},3000);}}
+
+// ── POMODORO ──────────────────────────────────────
+function renderPom(){var td=today(),ss=S.poms.filter(function(p){return p.date===td;});document.getElementById('p-sess').textContent=ss.length;document.getElementById('p-min').textContent=ss.filter(function(p){return p.mode==='work';}).reduce(function(s,p){return s+p.dur;},0)+'m';var streak=0,d=new Date();while(S.poms.some(function(p){return p.date===d.toISOString().split('T')[0]&&p.mode==='work';})){streak++;d.setDate(d.getDate()-1);}document.getElementById('p-str').textContent=streak+'🔥';var lhtml='';ss.slice().reverse().forEach(function(s){lhtml+='<div style="padding:5px 0;border-bottom:1px solid var(--bd);display:flex;justify-content:space-between"><span>'+(s.mode==='work'?'🎯':'☕')+' '+(s.lbl||'Session')+'</span><span style="color:var(--tx3)">'+s.st+' · '+s.dur+'min</span></div>';});document.getElementById('p-log').innerHTML=lhtml||'<div style="color:var(--tx3)">No sessions yet.</div>';updTD();renderTodos();}
+function setPM(mode,el){pomMode=mode;resetPom();document.querySelectorAll('#ptabs .tab').forEach(function(t){t.classList.remove('active');});el.classList.add('active');}
+function togglePom(){pomRun?pausePom():startPom();}
+function startPom(){if(pomRun)return;var dur={work:(S.cfg.fw||25)*60,short:(S.cfg.sw||5)*60,long:(S.cfg.lw||15)*60};if(pomSec===0)pomSec=dur[pomMode];pomRun=true;document.getElementById('p-startbtn').textContent='⏸ Pause';pomTimer=setInterval(tickPom,1000);}
+function pausePom(){clearInterval(pomTimer);pomRun=false;document.getElementById('p-startbtn').textContent='▶ Resume';}
+function resetPom(){clearInterval(pomTimer);pomRun=false;var dur={work:(S.cfg.fw||25)*60,short:(S.cfg.sw||5)*60,long:(S.cfg.lw||15)*60};pomSec=dur[pomMode];document.getElementById('p-startbtn').textContent='▶ Start';updTD();}
+async function tickPom(){pomSec--;if(pomSec<=0){clearInterval(pomTimer);pomRun=false;var td=today(),durs={work:S.cfg.fw||25,short:S.cfg.sw||5,long:S.cfg.lw||15};var sess={id:Date.now(),date:td,mode:pomMode,dur:durs[pomMode],st:new Date().toLocaleTimeString('en',{hour:'2-digit',minute:'2-digit'}),lbl:pomMode==='work'?'Focus Session':'Break'};await fsSet('poms',sess.id,sess);renderPom();toast(pomMode==='work'?'🎉 Focus complete!':'☕ Break over!');return;}updTD();}
+function updTD(){var dur={work:(S.cfg.fw||25)*60,short:(S.cfg.sw||5)*60,long:(S.cfg.lw||15)*60},total=dur[pomMode],s=pomSec||total;document.getElementById('t-disp').textContent=String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0');document.getElementById('t-lbl').textContent=pomLabels[pomMode];document.getElementById('tarc').style.strokeDashoffset=628.3*(1-(s/total));}
+
+// ── SETTINGS ──────────────────────────────────────
+function renderSettings(){
+  document.getElementById('s-name').value=S.cfg.name||'';
+  document.getElementById('s-loc').value=S.cfg.loc||'';
+  document.getElementById('s-theme').value=S.cfg.theme||'dark';
+  document.getElementById('s-foc').value=S.cfg.fw||25;
+  document.getElementById('s-shr').value=S.cfg.sw||5;
+  document.getElementById('s-lng').value=S.cfg.lw||15;
+  if(S.cfg.anthropicKey) document.getElementById('s-anthropic').value=S.cfg.anthropicKey;
+  renderCatList(); updateGmailUI(!!gmailToken);
+}
+async function saveApiKeys(){
+  var key=document.getElementById('s-anthropic').value.trim();
+  if(!key){ alert('กรอก API Key ก่อนครับ'); return; }
+  S.cfg.anthropicKey=key;
+  window._anthropicKey=key;
+  await fsSetCfg({anthropicKey:key});
+  toast('✅ API Key saved!');
+}
+window.saveApiKeys=saveApiKeys;
+async function saveSet(){S.cfg.name=document.getElementById('s-name').value||'Friend';S.cfg.loc=document.getElementById('s-loc').value;await fsSetCfg(S.cfg);document.getElementById('sname').textContent=S.cfg.name;toast('✅ Profile saved & synced!');}
+async function savePomSet(){S.cfg.fw=parseInt(document.getElementById('s-foc').value)||25;S.cfg.sw=parseInt(document.getElementById('s-shr').value)||5;S.cfg.lw=parseInt(document.getElementById('s-lng').value)||15;await fsSetCfg(S.cfg);resetPom();toast('✅ Timer saved!');}
+
+// ── DATA ──────────────────────────────────────────
+function exportAll(){var data={tx:S.tx,habits:S.habits,hlogs:S.hlogs,tasks:S.tasks,diary:S.diary,goals:S.goals,poms:S.poms,cfg:S.cfg};dl('lifeos-backup.json',JSON.stringify(data,null,2),'application/json');}
+async function clearAll(){var cols=['tx','habits','hlogs','tasks','diary','goals','poms'];for(var i=0;i<cols.length;i++){var c=cols[i];var snp=await getDocs(col(c));for(var j=0;j<snp.docs.length;j++)await deleteDoc(snp.docs[j].ref);}toast('🗑️ Cleared.');}
+async function loadDemo(){
+  var td=today();
+  var dOf2=function(n){var d=new Date();d.setDate(d.getDate()+n);return d.toISOString().split('T')[0];};
+  var txs=[
+    {id:1,type:'income',amount:45000,cat:'💼 Salary',desc:'เงินเดือน',date:dOf2(-15),time:'09:00'},
+    {id:2,type:'expense',amount:350,cat:'🍔 Food',desc:'ข้าวมันไก่',date:td,time:'12:30'},
+    {id:3,type:'expense',amount:1200,cat:'🚗 Transport',desc:'Grab',date:dOf2(-1),time:'08:15'},
+    {id:4,type:'income',amount:8000,cat:'💰 Freelance',desc:'Design Website',date:dOf2(-5),time:''},
+    {id:5,type:'expense',amount:599,cat:'🎮 Entertainment',desc:'Netflix',date:dOf2(-3),time:''},
+  ];
+  for(var i=0;i<txs.length;i++) await fsSet('tx',txs[i].id,txs[i]);
+  var habits=[{id:1,name:'ออกกำลังกาย',icon:'🏃',cat:'Health',goal:30,created:dOf2(-30)},{id:2,name:'อ่านหนังสือ',icon:'📚',cat:'Learning',goal:21,created:dOf2(-20)},{id:3,name:'ทำสมาธิ',icon:'🧘',cat:'Mindfulness',goal:14,created:dOf2(-15)}];
+  for(var i=0;i<habits.length;i++) await fsSet('habits',habits[i].id,habits[i]);
+  for(var i=0;i<10;i++){var ds=dOf2(-i),logs=[];habits.forEach(function(h){if(Math.random()>.3)logs.push(h.id);});await fsSetHlog(ds,logs);}
+  var tasks=[{id:1,title:'ประชุมทีม',desc:'',due:td,time:'10:00',priority:'high',done:false,status:'todo',tags:['งาน'],doneAt:null},{id:2,title:'ส่งรายงาน',desc:'',due:td,time:'17:00',priority:'high',done:false,status:'todo',tags:['งาน'],doneAt:null}];
+  for(var i=0;i<tasks.length;i++) await fsSet('tasks',tasks[i].id,tasks[i]);
+  var diary2=[{id:td,date:td,content:'วันนี้เป็นวันที่ดีมาก ออกกำลังกายตอนเช้า ประชุมกับทีมได้ผลดี',mood:'good',moodE:'🙂',loc:'Chon Buri',wx:'33°C',tags:['งาน'],wc:16,created:new Date().toISOString()}];
+  for(var i=0;i<diary2.length;i++) await fsSet('diary',diary2[i].id,diary2[i]);
+  var goals2=[{id:1,title:'เก็บเงิน 100,000 บาท',cat:'Finance',deadline:dOf2(180),desc:'เป้าหมายปีนี้',icon:'💰',ms:[{id:0,text:'เปิดบัญชีออมทรัพย์',done:true},{id:1,text:'เก็บเงิน 50,000',done:false}],created:dOf2(-60)}];
+  for(var i=0;i<goals2.length;i++) await fsSet('goals',goals2[i].id,goals2[i]);
+  await fsSetCfg({name:'Khun Somchai',theme:'dark',cur:'THB',loc:'Chon Buri, Thailand',fw:25,sw:5,lw:15});
+  closeM('mfab'); navigate('dashboard'); toast('🎭 Demo loaded!');
+}
+
+// ── KEYBOARD ──────────────────────────────────────
+document.addEventListener('keydown',function(e){if((e.ctrlKey||e.metaKey)&&e.key==='k'){e.preventDefault();openM('mfab');}if(e.key==='Escape')document.querySelectorAll('.mo.open').forEach(function(m){m.classList.remove('open');});});
+
+// ── INIT ──────────────────────────────────────────
+document.getElementById('d-date').textContent=new Date().toLocaleDateString('en-US',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+document.getElementById('fi-date').value=today();
+resetPom();
+populateCatSelect();
+</script>
+</body>
+</html>
